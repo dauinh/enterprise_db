@@ -12,7 +12,7 @@ class Crawler:
         self.driver.get(url)
         return self.driver.page_source
 
-    def get_all_links(self, html):
+    def get_all_collections_links(self, html):
         links = self.driver.find_elements(By.TAG_NAME, "a")
         results = []
         for l in links:
