@@ -17,7 +17,7 @@ The objective of this project is to create a database that stores information ab
 To set up the project, you need to have Python and `pip` installed. Then run this command to install all required packages.
 
 ```bash
-   pip install -r requirements. txt
+   pip install -r requirements.txt
 ```
 
 Alternatively, you can install the following packages by yourself:
