@@ -15,7 +15,7 @@ class Crawler:
         self.driver.get(url)
         return self.driver.page_source
 
-    def parse_collections_links(self, html):
+    def parse_collections_links(self):
         links = self.driver.find_elements(By.TAG_NAME, "a")
         results = []
         for l in links:
@@ -24,7 +24,7 @@ class Crawler:
             if x:
                 results.append(url)
         return results
-    
+
     def save_collections(self, links: list) -> None:
         """Save collection titles to CSV file.
         This function appends to existing CSV file, i.e. does not overwrite.
@@ -32,21 +32,21 @@ class Crawler:
         Parameters:
             links (list): a list of urls that is `https://www.muji.us/collections/*`
         """
-        save_file = CVSStorage('data/collections.csv')
-        save_file.save(['No', 'Collection'])
+        save_file = CVSStorage("data/collections.csv")
+        save_file.save(["No", "Collection"])
         for i, l in enumerate(links):
-            collection = l.split('/')[-1]
-            save_file.save([i+1, collection])
+            collection = l.split("/")[-1]
+            save_file.save([i + 1, collection])
 
     def quit(self):
         self.driver.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     crawler = Crawler()
-    url = 'https://www.muji.us/collections/'
+    url = "https://www.muji.us/collections/"
     html = crawler.fetch(url)
     x = re.search("<title>Collections - MUJI USA</title>", html)
     if x:
-        print('found it')
+        print("found it")
     crawler.quit()

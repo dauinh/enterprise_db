@@ -11,4 +11,4 @@ collections ~ specializations
 
 
 ### Run tests
-Run `python -m pytest`
+In `webscrape` directory, run `python -m pytest`
