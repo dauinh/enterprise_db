@@ -25,8 +25,14 @@ class Crawler:
                 results.append(url)
         return results
     
-    def save_collections(self, links):
-        save_file = CVSStorage('data.collections.csv')
+    def save_collections(self, links: list) -> None:
+        """Save collection titles to CSV file.
+        This function appends to existing CSV file, i.e. does not overwrite.
+
+        Parameters:
+            links (list): a list of urls that is `https://www.muji.us/collections/*`
+        """
+        save_file = CVSStorage('data/collections.csv')
         save_file.save(['No', 'Collection'])
         for i, l in enumerate(links):
             collection = l.split('/')[-1]
