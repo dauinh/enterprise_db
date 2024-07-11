@@ -8,3 +8,7 @@ collections ~ specializations
     - [ ] Get attributes
 - [ ] Check overlapping products
 - [ ] Redesign ER model
+
+
+### Run tests
+Run `python -m pytest`

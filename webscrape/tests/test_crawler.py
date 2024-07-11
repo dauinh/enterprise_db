@@ -1,7 +1,7 @@
 # webscrape/tests/test_crawler.py
 import pytest
 from selenium.webdriver.common.by import By
-from webscrape.crawler import Crawler
+from crawler import Crawler
 
 @pytest.fixture(scope="module")
 def crawler():
@@ -18,3 +18,6 @@ def test_fetch(crawler):
 #     crawler.driver.get('http://example.com')
 #     title = crawler.driver.find_element(By.TAG_NAME, 'title').get_attribute('innerText')
 #     assert title == 'Example Domain'
+
+if __name__ == '__main__':
+    crawler = Crawler()
