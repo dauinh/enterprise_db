@@ -3,19 +3,27 @@ import re
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 from storage import CVSStorage
 
+options = webdriver.FirefoxOptions()
+options.add_argument("--headless")
 
 class Crawler:
     def __init__(self):
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Firefox(options=options)
 
     def fetch(self, url):
         self.driver.get(url)
         return self.driver.page_source
 
-    def parse_collections_links(self):
+    def parse_collections_links(self) -> list:
+        """Parse collections links from Muji Collections page.
+
+        Return:
+            results (list): list of urls
+        """
         links = self.driver.find_elements(By.TAG_NAME, "a")
         results = []
         for l in links:
