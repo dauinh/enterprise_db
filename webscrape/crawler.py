@@ -37,7 +37,7 @@ class Crawler:
         """Save collection titles to CSV file.
         This function appends to existing CSV file, i.e. does not overwrite.
 
-        Parameters:
+        Parameter:
             links (list): a list of urls that is `https://www.muji.us/collections/*`
         """
         save_file = CVSStorage("data/collections.csv")
@@ -46,15 +46,31 @@ class Crawler:
             collection = l.split("/")[-1]
             save_file.save([i + 1, collection])
 
+    def parse_products_per_collection(self, collection_url: str) -> list:
+        """Parse product links from given collection.
+
+        Parameter:
+            collection_url (str): url for selected collection
+
+        Return:
+            results (list): list of urls
+        """
+        products = self.driver.find_elements(By.CLASS_NAME, "productgrid--item")
+        # results = []
+        # for l in links:
+        #     url = l.get_attribute("href")
+        #     x = re.search(".*/collections/[\w-]*$", url)
+        #     if x:
+        #         results.append(url)
+        # return results
+
     def quit(self):
         self.driver.quit()
 
 
 if __name__ == "__main__":
     crawler = Crawler()
-    url = "https://www.muji.us/collections/"
-    html = crawler.fetch(url)
-    x = re.search("<title>Collections - MUJI USA</title>", html)
-    if x:
-        print("found it")
-    crawler.quit()
+    file = CVSStorage("data/collections.csv")
+    header, collections = file.read()
+    print(len(collections), header)
+    print(collections[:5])
