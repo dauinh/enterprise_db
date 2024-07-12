@@ -2,10 +2,15 @@
 import csv
 
 
-class CVSStorage:
+class CSVStorage:
     def __init__(self, file_path) -> None:
         self.file_path = file_path
 
+    def clear(self) -> None:
+        # Clear existing file
+        with open(self.file_path, mode="w") as empty:
+            pass
+    
     def save(self, data) -> None:
         with open(self.file_path, mode="a", newline="") as file:
             writer = csv.writer(file)
@@ -15,7 +20,6 @@ class CVSStorage:
         data = []
         with open(self.file_path, mode="r") as file:
             reader = csv.reader(file)
-            header = next(reader)
             for row in reader:
                 data.append(row)
-        return header, data
+        return data
