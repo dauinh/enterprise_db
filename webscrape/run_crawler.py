@@ -6,8 +6,8 @@ if __name__ == "__main__":
     try:
         url = "https://www.muji.us/collections/"
         crawler.fetch(url)
-        urls = crawler.parse_collections_urls()
-        crawler.save_to_csv("collections", urls)
+        urls = crawler.parse_collections()
+        crawler.save_urls("collections", urls)
 
     except Exception as e:
         print(e)

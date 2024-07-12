@@ -15,3 +15,18 @@ def test_fetch(crawler):
     url = "https://www.muji.us/collections/"
     crawler.fetch(url)
     assert "Collections — MUJI USA" == crawler.driver.title
+
+
+def test_parse_collections(crawler):
+    assert len(crawler.parse_collections()) != 0
+
+
+def test_parse_products_per_collection(crawler):
+    urls = [
+        "https://www.muji.us/collections/apparel",
+        "https://www.muji.us/collections/new-arrivals"
+    ]
+    for u in urls:
+        crawler.fetch(u)
+        results = crawler.parse_products_per_collection()
+        assert all(results) == True

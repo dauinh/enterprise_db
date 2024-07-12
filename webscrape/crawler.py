@@ -16,13 +16,13 @@ options.add_argument("--headless")
 # TODO: create separate classes for collection page crawler and product page crawler
 class Crawler:
     def __init__(self):
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Firefox(options=options)
 
     def fetch(self, url):
         self.driver.get(url)
         return self.driver.page_source
 
-    def parse_collections_urls(self) -> list:
+    def parse_collections(self) -> list:
         """Parse collections urls from Muji Collections page.
 
         Return:
@@ -53,7 +53,7 @@ class Crawler:
             results.append(url)
         return results
 
-    def save_to_csv(self, file_name: str, urls: list) -> None:
+    def save_urls(self, file_name: str, urls: list) -> None:
         """Save scraped urls to CSV file.
 
         Parameter:
@@ -79,11 +79,12 @@ if __name__ == "__main__":
     # edge case: new-arrivals
     
     print(len(collections), collections[:2])
-    url = collections[0][0]
+    url = collections[1][0]
     title = url.split('/')[-1]
     
     crawler.fetch(url)
     res = crawler.parse_products_per_collection()
-    crawler.save_to_csv(title, res)
+    print(res)
+    crawler.save_urls(title, res)
 
     crawler.quit()
