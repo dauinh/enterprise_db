@@ -18,7 +18,8 @@ def test_fetch(crawler):
 
 
 def test_parse_collections(crawler):
-    assert len(crawler.parse_collections()) != 0
+    results = crawler.parse_collections()
+    assert all(results) == True
 
 
 def test_parse_products_per_collection(crawler):

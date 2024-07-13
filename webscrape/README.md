@@ -1,4 +1,4 @@
-# Muji DB Crawler
+# Muji Crawler
 
 - [x] Get collections links
 - [x] Save collections to cvs file

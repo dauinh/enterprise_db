@@ -17,6 +17,7 @@ options.add_argument("--headless")
 class Crawler:
     def __init__(self):
         self.driver = webdriver.Firefox(options=options)
+        self.driver.delete_all_cookies()
 
     def fetch(self, url):
         self.driver.get(url)
@@ -51,6 +52,18 @@ class Crawler:
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
             results.append(url)
+        
+        # If encounter pages like collections/new-arrivals,
+        # then load all products and target product titles
+        if len(products) == 0:
+            results = []
+            links = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
+            )
+            print(len(links), 'links')
+            # for l in links:
+            #     url = l.get_attribute("href")
+            #     results.append(url)
         return results
 
     def save_urls(self, file_name: str, urls: list) -> None:
@@ -83,8 +96,9 @@ if __name__ == "__main__":
     title = url.split('/')[-1]
     
     crawler.fetch(url)
-    res = crawler.parse_products_per_collection()
-    print(res)
-    crawler.save_urls(title, res)
-
-    crawler.quit()
+    try:
+        res = crawler.parse_products_per_collection()
+        print(res)
+        crawler.save_urls(title, res)
+    finally:
+        crawler.quit()
