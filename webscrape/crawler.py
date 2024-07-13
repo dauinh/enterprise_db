@@ -66,24 +66,15 @@ class Crawler:
         Return:
             results (list): list of urls
         """
-        # Load all products        
-        i = 0
-        while True:
-            print("load: ", i)
-            load_button = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "ns-loadmore-btn"))
-            )
-            if not load_button:
-                break
+        # Load all products
+        load_text = WebDriverWait(self.driver, 2).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@class='ns-pagination-container']/div"))
+        )
+        total_products = load_text.text.split()[-1]
+        self.fetch(f"{self.current_page}?products.size={total_products}")
 
-            actions = ActionChains(self.driver)
-            actions.scroll_to_element(load_button)
-            actions.move_to_element(load_button)
-            actions.click(load_button).perform()
-            i += 1
-        return
         # Parse urls
-        titles = WebDriverWait(self.driver, 10).until(
+        titles = WebDriverWait(self.driver, 2).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
         )
         print(len(titles), 'titles')
@@ -127,7 +118,6 @@ if __name__ == "__main__":
     crawler.fetch(url)
     try:
         res = crawler.parse_products_per_collection()
-        print(res)
         crawler.save_urls(title, res)
     finally:
         crawler.quit()
