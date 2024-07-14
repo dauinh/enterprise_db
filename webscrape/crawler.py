@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import ActionChains
 
 from storage import CSVStorage
 
@@ -26,24 +25,55 @@ class Crawler:
         self.driver.get(url)
         self.current_page = url
         return self.driver.page_source
+    
+    def save_urls(self, file_name: str, urls: list) -> None:
+        """Save scraped urls to CSV file.
 
-    # TODO: 1. rewrite to fit new change
-    # 2. only save unique values
-    def parse_collections(self) -> list:
+        Parameter:
+            file_name (str): name of file
+            urls (list): a list of urls
+        """
+        save_file = CSVStorage("data/" + file_name + ".csv")
+        save_file.clear()
+        for u in urls:
+            save_file.save([u])
+    
+    def quit(self):
+        self.driver.quit()
+
+
+class CollectionParser:
+    def __init__(self) -> None:
+        self.crawler = Crawler()
+        self.url = BASE_URL + "/collections/"
+
+    def run(self) -> None:
         """Parse collections urls from Muji Collections page.
 
         Return:
             results (list): list of urls
         """
-        links = self.driver.find_elements(By.TAG_NAME, "a")
+        self.crawler.fetch(self.url)
+        urls = self.get_collections()
+        self.crawler.save_urls("collections", urls)
+
+    def get_collections(self) -> list:
+        links = self.crawler.driver.find_elements(By.TAG_NAME, "a")
+        unique = set()
         results = []
         for l in links:
             url = l.get_attribute("href")
             x = re.search(".*/collections/[\w-]*$", url)
-            if x:
+            if x and url not in unique:
                 results.append(url)
+                unique.add(url)
 
         return results
+
+
+class ProductParser:
+    def __init__(self) -> None:
+        self.crawler = Crawler()
 
     def parse_products_per_collection(self) -> list:
         """Parse product urls from given Muji collection page.
@@ -51,8 +81,8 @@ class Crawler:
         Return:
             results (list): list of urls
         """
-        self.driver.implicitly_wait(2)
-        products = self.driver.find_elements(By.CLASS_NAME, "productgrid--item")
+        self.crawler.driver.implicitly_wait(2)
+        products = self.crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
@@ -71,14 +101,14 @@ class Crawler:
             results (list): list of urls
         """
         # Load all products
-        load_text = WebDriverWait(self.driver, 2).until(
+        load_text = WebDriverWait(self.crawler.driver, 2).until(
             EC.presence_of_element_located((By.XPATH, "//div[@class='ns-pagination-container']/div"))
         )
         total_products = load_text.text.split()[-1]
         self.fetch(f"{self.current_page}?products.size={total_products}")
 
         # Parse urls
-        titles = WebDriverWait(self.driver, 2).until(
+        titles = WebDriverWait(self.crawler.driver, 2).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
         )
         # print(len(titles), 'titles')
@@ -90,45 +120,35 @@ class Crawler:
 
         return results
 
-    def save_urls(self, file_name: str, urls: list) -> None:
-        """Save scraped urls to CSV file.
-
-        Parameter:
-            file_name (str): name of file
-            urls (list): a list of urls
-        """
-        save_file = CSVStorage("data/" + file_name + ".csv")
-        save_file.clear()
-        for u in urls:
-            save_file.save([u])
-
-    def quit(self):
-        self.driver.quit()
-
 
 if __name__ == "__main__":
-    file = CSVStorage("data/collections.csv")
-    collections = file.read()
-    seen = set()
+    collection_parser = CollectionParser()
+    collection_parser.run()
 
-    for i, c in enumerate(collections):
-        print(i, c)
-        crawler = Crawler()
-        url = c[0]
-        save_file_name = url.split('/')[-1]
 
-        try:
-            crawler.fetch(url)
-            if url not in seen:
-                res = crawler.parse_products_per_collection()
-                if not res:
-                    print("Cannot scrape", save_file_name)
-                else:
-                    crawler.save_urls(save_file_name, res)
-                    seen.add(url)
-        except Exception as e:
-            print("Cannot scrape", save_file_name)
-            print(e)
-            continue
-        finally:
-            crawler.quit()
+# if __name__ == "__main__":
+#     file = CSVStorage("data/collections.csv")
+#     collections = file.read()
+#     seen = set()
+
+#     for i, c in enumerate(collections):
+#         print(i, c)
+#         crawler = Crawler()
+#         url = c[0]
+#         save_file_name = url.split('/')[-1]
+
+#         try:
+#             crawler.fetch(url)
+#             if url not in seen:
+#                 res = crawler.parse_products_per_collection()
+#                 if not res:
+#                     print("Cannot scrape", save_file_name)
+#                 else:
+#                     crawler.save_urls(save_file_name, res)
+#                     seen.add(url)
+#         except Exception as e:
+#             print("Cannot scrape", save_file_name)
+#             print(e)
+#             continue
+#         finally:
+#             crawler.quit()
