@@ -4,8 +4,12 @@
 - [x] Save collections to cvs file
 - [ ] Get all products
 collections ~ specializations
-    - [ ] Implement headless driver and wait time
-    - [ ] Get attributes
+    - [x] Implement headless driver and wait time
+    - [x] Get product urls
+    - [ ] Refactor crawler
+    - [ ] Refactor to `run_crawler.py`
+    - [ ] Write test
+    - [ ] Get product details
 - [ ] Check overlapping products
 - [ ] Redesign ER model
 

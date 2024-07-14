@@ -27,7 +27,8 @@ class Crawler:
         self.current_page = url
         return self.driver.page_source
 
-    # TODO: rewrite to fit new change
+    # TODO: 1. rewrite to fit new change
+    # 2. only save unique values
     def parse_collections(self) -> list:
         """Parse collections urls from Muji Collections page.
 
