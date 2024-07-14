@@ -43,8 +43,9 @@ class Crawler:
 
 
 class CollectionParser:
-    def __init__(self) -> None:
+    def __init__(self):
         self.crawler = Crawler()
+        self.driver = self.crawler.driver
         self.url = BASE_URL + "/collections/"
 
     def run(self) -> None:
@@ -53,9 +54,14 @@ class CollectionParser:
         Return:
             results (list): list of urls
         """
-        self.crawler.fetch(self.url)
-        urls = self.get_collections()
-        self.crawler.save_urls("collections", urls)
+        try:
+            self.crawler.fetch(self.url)
+            urls = self.get_collections()
+            self.crawler.save_urls("collections", urls)
+        except Exception as e:
+            print(e)
+        finally:
+            self.crawler.quit()
 
     def get_collections(self) -> list:
         links = self.crawler.driver.find_elements(By.TAG_NAME, "a")
@@ -72,43 +78,66 @@ class CollectionParser:
 
 
 class ProductParser:
-    def __init__(self) -> None:
-        self.crawler = Crawler()
-
-    def parse_products_per_collection(self) -> list:
-        """Parse product urls from given Muji collection page.
+    def parse_product_urls(self) -> None:
+        """Parse product urls by collection from given Muji collection page.
 
         Return:
             results (list): list of urls
         """
-        self.crawler.driver.implicitly_wait(2)
-        products = self.crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
+        collections = CSVStorage("data/collections.csv").read()
+
+        for i, c in enumerate(collections):
+            if i > 2: break
+            print(i, c)
+            crawler = Crawler()
+            url = c[0]
+            save_file_name = "collections/" + url.split('/')[-1]
+            try:
+                crawler.fetch(url)
+                res = self.get_product_urls(crawler)
+                if not res:
+                    print("Cannot scrape", save_file_name)
+                else:
+                    crawler.save_urls(save_file_name, res)
+            except Exception as e:
+                print("Cannot scrape", save_file_name)
+                print(e)
+                continue
+            finally:
+                crawler.quit()
+        pass
+
+    def get_product_urls(self, crawler: Crawler) -> list:
+        driver = crawler.driver
+        driver.implicitly_wait(2)
+        products = driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
             if url: results.append(url)
 
         # Parse by alternative method
-        if len(results) == 0: results = self.parse_alt_products()
+        if len(results) == 0: results = self.get_from_alt_collection(crawler)
 
         return results
     
-    def parse_alt_products(self) -> list:
-        """Special parser for collections/new-arrivals.
+    def get_from_alt_collection(self, crawler: Crawler) -> list:
+        """Special parser for collections with different layout.
         Load all products then get urls from product title.
 
         Return:
             results (list): list of urls
         """
+        driver = crawler.driver
         # Load all products
-        load_text = WebDriverWait(self.crawler.driver, 2).until(
+        load_text = WebDriverWait(driver, 2).until(
             EC.presence_of_element_located((By.XPATH, "//div[@class='ns-pagination-container']/div"))
         )
         total_products = load_text.text.split()[-1]
-        self.fetch(f"{self.current_page}?products.size={total_products}")
+        crawler.fetch(f"{crawler.current_page}?products.size={total_products}")
 
         # Parse urls
-        titles = WebDriverWait(self.crawler.driver, 2).until(
+        titles = WebDriverWait(driver, 2).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
         )
         # print(len(titles), 'titles')
@@ -122,33 +151,8 @@ class ProductParser:
 
 
 if __name__ == "__main__":
-    collection_parser = CollectionParser()
-    collection_parser.run()
+    # collection_parser = CollectionParser()
+    # collection_parser.run()
 
-
-# if __name__ == "__main__":
-#     file = CSVStorage("data/collections.csv")
-#     collections = file.read()
-#     seen = set()
-
-#     for i, c in enumerate(collections):
-#         print(i, c)
-#         crawler = Crawler()
-#         url = c[0]
-#         save_file_name = url.split('/')[-1]
-
-#         try:
-#             crawler.fetch(url)
-#             if url not in seen:
-#                 res = crawler.parse_products_per_collection()
-#                 if not res:
-#                     print("Cannot scrape", save_file_name)
-#                 else:
-#                     crawler.save_urls(save_file_name, res)
-#                     seen.add(url)
-#         except Exception as e:
-#             print("Cannot scrape", save_file_name)
-#             print(e)
-#             continue
-#         finally:
-#             crawler.quit()
+    product_parser = ProductParser()
+    product_parser.parse_product_urls()
