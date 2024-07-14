@@ -1,5 +1,6 @@
 # webscrape/crawler.py
 import re
+from os import listdir
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -78,7 +79,7 @@ class CollectionParser:
 
 
 class ProductParser:
-    def parse_product_urls(self) -> None:
+    def parse_urls_per_collection(self) -> None:
         """Parse product urls by collection from given Muji collection page.
 
         Return:
@@ -94,7 +95,7 @@ class ProductParser:
             save_file_name = "collections/" + url.split('/')[-1]
             try:
                 crawler.fetch(url)
-                res = self.get_product_urls(crawler)
+                res = self.get_urls_per_collection(crawler)
                 if not res:
                     print("Cannot scrape", save_file_name)
                 else:
@@ -107,17 +108,17 @@ class ProductParser:
                 crawler.quit()
         pass
 
-    def get_product_urls(self, crawler: Crawler) -> list:
+    def get_urls_per_collection(self, crawler: Crawler) -> list:
         driver = crawler.driver
         driver.implicitly_wait(2)
         products = driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
+        # Parse by alternative method
+        if len(products) == 0: results = self.get_from_alt_collection(crawler)
+
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
             if url: results.append(url)
-
-        # Parse by alternative method
-        if len(results) == 0: results = self.get_from_alt_collection(crawler)
 
         return results
     
@@ -148,11 +149,131 @@ class ProductParser:
             results.append(url)
 
         return results
+    
+    def parse_product_info(self) -> None:
+        collection_files = [f for f in listdir("data/collections")]
+        # print(len(collection_files), collection_files[:5])
 
+        # iterate each collection
+        for i, collection in enumerate(collection_files):
+            if i > 1: break
+            product_urls = CSVStorage(f"data/collections/{collection}").read()
+
+            # iterate each product url
+            for i, url in enumerate(product_urls):
+                if i > 1: break
+                url = url[0]
+                # check if url is relative, add base url if not
+                if "https" != url[:5]:
+                    url = BASE_URL + url
+
+                self.get_product_info(url)
+
+    def get_product_info(self, url) -> dict:
+        crawler = Crawler()
+        try:
+            crawler.fetch(url)
+            crawler.driver.implicitly_wait(2)
+
+            data = []
+            # data cols: [title, price, color, size, description, product details, material & care]
+            title = self.get_title(crawler.driver)
+            data.append(title)
+
+            price = self.get_price(crawler.driver)
+            data.append(price)
+
+            colors, sizes = self.get_colors_and_sizes(crawler.driver)
+            data.append(colors)
+            data.append(sizes)
+
+            description = self.get_description(crawler.driver)
+            data.append(description)
+
+            details, care = self.get_details_and_care(crawler.driver)
+            data.append(details)
+            data.append(care)
+
+            print(data)
+            # save to file all_products.csv
+        
+        except Exception as e:
+            print("Error with", url)
+            print(e)
+        finally:
+            crawler.quit()
+
+    def get_title(self, driver) -> str:
+        try:
+            title_element = driver.find_element(By.CLASS_NAME, "product-title")
+            return title_element.text
+        except Exception as e:
+            print("Error getting product title")
+            print(e)
+            return ""
+
+    def get_product_title(self, driver) -> str:
+        try:
+            title_element = driver.find_element(By.CLASS_NAME, "product-title")
+            return title_element.text
+        except Exception as e:
+            print("Error getting product title")
+            print(e)
+            return ""
+        
+    def get_price(self, driver) -> str:
+        try:
+            current_price_element = driver.find_element(By.CLASS_NAME, "price__current")
+            price_element = current_price_element.find_element(By.CLASS_NAME, "money")
+            return price_element.text
+        except Exception as e:
+            print("Error getting product price")
+            print(e)
+            return ""
+        
+    def get_colors_and_sizes(self, driver) -> list[list, list]:
+        try:
+            options = driver.find_elements(By.CLASS_NAME, "options-selection__option-value-input")
+            colors = []
+            sizes = []
+            for opt in options:
+                c = opt.find_element(By.CLASS_NAME, "Color")
+                s = opt.find_element(By.CLASS_NAME, "Size")
+                colors.append(c.get_attribute("value"))
+                sizes.append(s.get_attribute("value"))
+            return colors, sizes
+        except Exception as e:
+            print("Error getting product colors and sizes")
+            print(e)
+            return [[], []]
+        
+    def get_description(self, driver) -> str:
+        try:
+            description_element = driver.find_element(By.CLASS_NAME, "product-description")
+            texts = description_element.find_elements(By.TAG_NAME, "span")
+            full_text = [t.text for t in texts]
+            return "\n".join(full_text)
+        except Exception as e:
+            print("Error getting product description")
+            print(e)
+            return ""
+        
+    def get_details_and_care(self, driver) -> list[str, str]:
+        try:
+            collapsibles = driver.find_elements(By.CLASS_NAME, "collapsible-tab__text")
+            details = collapsibles[0].find_elements(By.TAG_NAME, "p")
+            care = collapsibles[1].find_elements(By.TAG_NAME, "p")
+            details_text = [x.text for x in details]
+            care_text = [x.text for x in care]
+            return ["\n".join(details_text), "\n".join(care_text)]
+        except Exception as e:
+            print("Error getting product details and care")
+            print(e)
+            return [[], []]
 
 if __name__ == "__main__":
     # collection_parser = CollectionParser()
     # collection_parser.run()
 
     product_parser = ProductParser()
-    product_parser.parse_product_urls()
+    product_parser.parse_product_info()
