@@ -13,6 +13,7 @@ BASE_URL = "https://www.muji.us"
 
 options = webdriver.FirefoxOptions()
 options.add_argument("--headless")
+options.add_argument('--disable-blink-features=AutomationControlled')
 
 # TODO: create separate classes for collection page crawler and product page crawler
 class Crawler:
@@ -26,6 +27,7 @@ class Crawler:
         self.current_page = url
         return self.driver.page_source
 
+    # TODO: rewrite to fit new change
     def parse_collections(self) -> list:
         """Parse collections urls from Muji Collections page.
 
@@ -48,18 +50,19 @@ class Crawler:
         Return:
             results (list): list of urls
         """
-        if "new-arrivals" in self.current_page:
-            return self.parse_new_arrivals()
-
+        self.driver.implicitly_wait(2)
         products = self.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
-            results.append(url)
+            if url: results.append(url)
+
+        # Parse by alternative method
+        if len(results) == 0: results = self.parse_alt_products()
 
         return results
     
-    def parse_new_arrivals(self) -> list:
+    def parse_alt_products(self) -> list:
         """Special parser for collections/new-arrivals.
         Load all products then get urls from product title.
 
@@ -77,7 +80,7 @@ class Crawler:
         titles = WebDriverWait(self.driver, 2).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
         )
-        print(len(titles), 'titles')
+        # print(len(titles), 'titles')
         results = []
         for t in titles:
             link = t.find_element(By.TAG_NAME, "a")
@@ -103,21 +106,28 @@ class Crawler:
 
 
 if __name__ == "__main__":
-    crawler = Crawler()
-
     file = CSVStorage("data/collections.csv")
     collections = file.read()
-    
-    # https://www.muji.us/collections/apparel
-    # edge case: new-arrivals
-    
-    print(len(collections), collections[:2])
-    url = collections[1][0]
-    title = url.split('/')[-1]
+    seen = set()
 
-    crawler.fetch(url)
-    try:
-        res = crawler.parse_products_per_collection()
-        crawler.save_urls(title, res)
-    finally:
-        crawler.quit()
+    for i, c in enumerate(collections):
+        print(i, c)
+        crawler = Crawler()
+        url = c[0]
+        save_file_name = url.split('/')[-1]
+
+        try:
+            crawler.fetch(url)
+            if url not in seen:
+                res = crawler.parse_products_per_collection()
+                if not res:
+                    print("Cannot scrape", save_file_name)
+                else:
+                    crawler.save_urls(save_file_name, res)
+                    seen.add(url)
+        except Exception as e:
+            print("Cannot scrape", save_file_name)
+            print(e)
+            continue
+        finally:
+            crawler.quit()
