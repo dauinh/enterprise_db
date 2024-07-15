@@ -51,9 +51,6 @@ class CollectionParser:
 
     def run(self) -> None:
         """Parse collections urls from Muji Collections page.
-
-        Return:
-            results (list): list of urls
         """
         try:
             self.crawler.fetch(self.url)
@@ -81,14 +78,10 @@ class CollectionParser:
 class ProductParser:
     def parse_urls_per_collection(self) -> None:
         """Parse product urls by collection from given Muji collection page.
-
-        Return:
-            results (list): list of urls
         """
         collections = CSVStorage("data/collections.csv").read()
-
         for i, c in enumerate(collections):
-            if i > 2: break
+            # if i > 2: break
             print(i, c)
             crawler = Crawler()
             url = c[0]
@@ -106,19 +99,20 @@ class ProductParser:
                 continue
             finally:
                 crawler.quit()
-        pass
 
     def get_urls_per_collection(self, crawler: Crawler) -> list:
-        driver = crawler.driver
-        driver.implicitly_wait(2)
-        products = driver.find_elements(By.CLASS_NAME, "productgrid--item")
+        crawler.driver.implicitly_wait(2)
+        products = crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
         # Parse by alternative method
         if len(products) == 0: results = self.get_from_alt_collection(crawler)
 
+        unique = set()
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
-            if url: results.append(url)
+            if url and url not in unique: 
+                results.append(url)
+                unique.add(url)
 
         return results
     
@@ -129,47 +123,53 @@ class ProductParser:
         Return:
             results (list): list of urls
         """
-        driver = crawler.driver
         # Load all products
-        load_text = WebDriverWait(driver, 2).until(
+        load_text = WebDriverWait(crawler.driver, 2).until(
             EC.presence_of_element_located((By.XPATH, "//div[@class='ns-pagination-container']/div"))
         )
         total_products = load_text.text.split()[-1]
         crawler.fetch(f"{crawler.current_page}?products.size={total_products}")
 
         # Parse urls
-        titles = WebDriverWait(driver, 2).until(
+        titles = WebDriverWait(crawler.driver, 2).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, "productitem--title"))
         )
         # print(len(titles), 'titles')
         results = []
+        unique = set()
         for t in titles:
             link = t.find_element(By.TAG_NAME, "a")
             url = link.get_attribute("href")
-            results.append(url)
+            if url not in unique:
+                results.append(url)
+                unique.add(url)
 
         return results
     
     def parse_product_info(self) -> None:
-        collection_files = [f for f in listdir("data/collections")]
-        # print(len(collection_files), collection_files[:5])
+        products_file = CSVStorage("data/products.csv")
+        products_file.clear()
 
         # iterate each collection
+        collection_files = [f for f in listdir("data/collections")]
         for i, collection in enumerate(collection_files):
-            if i > 1: break
+            if i > 5: break
+            print(i, collection)
             product_urls = CSVStorage(f"data/collections/{collection}").read()
 
             # iterate each product url
             for i, url in enumerate(product_urls):
-                if i > 1: break
                 url = url[0]
+                print(url)
                 # check if url is relative, add base url if not
                 if "https" != url[:5]:
                     url = BASE_URL + url
 
-                self.get_product_info(url)
+                # save product info to products.csv
+                info = self.get_product_info(url)
+                products_file.save(info)
 
-    def get_product_info(self, url) -> dict:
+    def get_product_info(self, url) -> list:
         crawler = Crawler()
         try:
             crawler.fetch(url)
@@ -194,9 +194,7 @@ class ProductParser:
             data.append(details)
             data.append(care)
 
-            print(data)
-            # save to file all_products.csv
-        
+            return data
         except Exception as e:
             print("Error with", url)
             print(e)

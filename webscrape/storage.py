@@ -24,7 +24,7 @@ class CSVStorage:
                 data.append(row)
         return data
     
-    def remove_duplicates(self) -> None:
+    def remove_duplicates(self, new_file_path) -> None:
         """Asume that file only contains one column."""
         old_file = self.read()
         unique = set()
@@ -35,8 +35,6 @@ class CSVStorage:
                 results.append(url)
                 unique.add(url)
 
-        new_file_path = self.file_path[:-4] + '_edited.csv'
         new_save_file = CSVStorage(new_file_path)
-
         for row in results:
             new_save_file.save([row])
