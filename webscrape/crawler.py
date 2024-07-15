@@ -148,12 +148,12 @@ class ProductParser:
     
     def parse_product_info(self) -> None:
         products_file = CSVStorage("data/products.csv")
-        products_file.clear()
+        # products_file.clear()
 
         # iterate each collection
         collection_files = [f for f in listdir("data/collections")]
         for i, collection in enumerate(collection_files):
-            if i > 5: break
+            # if i < 5: break
             print(i, collection)
             product_urls = CSVStorage(f"data/collections/{collection}").read()
 
@@ -167,7 +167,7 @@ class ProductParser:
 
                 # save product info to products.csv
                 info = self.get_product_info(url)
-                products_file.save(info)
+                products_file.save([collection[:-4]] + info)
 
     def get_product_info(self, url) -> list:
         crawler = Crawler()

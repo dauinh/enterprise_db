@@ -10,7 +10,7 @@ collections ~ specializations
     - [x] Refactor crawler
     - [ ] Refactor to `run_crawler.py`
     - [ ] Write test
-    - [ ] Get product details
+    - [x] Get product details
 - [ ] Check overlapping products
 - [ ] Redesign ER model
 
