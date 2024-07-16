@@ -25,7 +25,7 @@ def test_parse_collections(crawler):
 def test_parse_products_per_collection(crawler):
     urls = [
         "https://www.muji.us/collections/apparel",
-        "https://www.muji.us/collections/new-arrivals"
+        "https://www.muji.us/collections/new-arrivals",
     ]
     for u in urls:
         crawler.fetch(u)

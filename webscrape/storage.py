@@ -10,7 +10,7 @@ class CSVStorage:
         # Clear existing file
         with open(self.file_path, mode="w") as empty:
             pass
-    
+
     def save(self, data) -> None:
         with open(self.file_path, mode="a", newline="") as file:
             writer = csv.writer(file)
@@ -23,7 +23,7 @@ class CSVStorage:
             for row in reader:
                 data.append(row)
         return data
-    
+
     def remove_duplicates(self, new_file_path) -> None:
         """Asume that file only contains one column."""
         old_file = self.read()
