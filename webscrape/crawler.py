@@ -150,22 +150,23 @@ class ProductParser:
 
     def parse_product_info(self) -> None:
         products_file = CSVStorage("data/products.csv")
-        products_file.clear()
-        header = [
-            "Title",
-            "Current price",
-            "Colors",
-            "Sizes",
-            "Description",
-            "Product details",
-            "Materials & care",
-        ]
-        products_file.save(header)
+        # products_file.clear()
+        # header = [
+        #     "Collection",
+        #     "Title",
+        #     "Current price",
+        #     "Colors",
+        #     "Sizes",
+        #     "Description",
+        #     "Product details",
+        #     "Materials & care",
+        # ]
+        # products_file.save(header)
 
         # iterate each collection
         collection_files = [f for f in listdir("data/collections")]
         for i, collection in enumerate(collection_files):
-            # if i < 4: continue
+            if i < 32: continue
             # if i > 4: break
             print("\n--------------------------------")
             print(i, collection)
@@ -180,9 +181,13 @@ class ProductParser:
                 if "https" != url[:5]:
                     url = BASE_URL + url
 
-                # save product info to products.csv
-                info = self.get_product_info(url)
-                products_file.save([collection[:-4]] + info)
+                try:
+                    # save product info to products.csv
+                    info = self.get_product_info(url)
+                    products_file.save([collection[:-4]] + info)
+                except Exception as e:
+                    print(e)
+    
 
     def get_product_info(self, url) -> list:
         crawler = Crawler()
