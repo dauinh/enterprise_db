@@ -148,17 +148,19 @@ class ProductParser:
     
     def parse_product_info(self) -> None:
         products_file = CSVStorage("data/products.csv")
-        # products_file.clear()
+        products_file.clear()
 
         # iterate each collection
         collection_files = [f for f in listdir("data/collections")]
         for i, collection in enumerate(collection_files):
-            # if i < 5: break
+            if i < 4: continue
+            if i > 4: break
             print(i, collection)
             product_urls = CSVStorage(f"data/collections/{collection}").read()
 
             # iterate each product url
             for i, url in enumerate(product_urls):
+                if i > 2: break
                 url = url[0]
                 print(url)
                 # check if url is relative, add base url if not
@@ -183,8 +185,10 @@ class ProductParser:
             price = self.get_price(crawler.driver)
             data.append(price)
 
-            colors, sizes = self.get_colors_and_sizes(crawler.driver)
+            colors = self.get_colors(crawler.driver)
             data.append(colors)
+
+            sizes = self.get_sizes(crawler.driver)
             data.append(sizes)
 
             description = self.get_description(crawler.driver)
@@ -229,32 +233,44 @@ class ProductParser:
             print(e)
             return ""
         
-    def get_colors_and_sizes(self, driver) -> list[list, list]:
+    def get_colors(self, driver) -> list:
+        colors = []
         try:
-            options = driver.find_elements(By.CLASS_NAME, "options-selection__option-value-input")
-            colors = []
-            sizes = []
+            options = driver.find_elements(By.CLASS_NAME, "options-selection__option-swatch-wrapper")
             for opt in options:
-                c = opt.find_element(By.CLASS_NAME, "Color")
-                s = opt.find_element(By.CLASS_NAME, "Size")
-                colors.append(c.get_attribute("value"))
-                sizes.append(s.get_attribute("value"))
-            return colors, sizes
+                c = opt.get_attribute("data-swatch-tooltip")
+                colors.append(c)
         except Exception as e:
-            print("Error getting product colors and sizes")
+            print("Error getting product colors")
             print(e)
-            return [[], []]
+        finally:
+            return colors
+        
+    def get_sizes(self, driver) -> list:
+        sizes = []
+        try:
+            options = driver.find_elements(By.CLASS_NAME, "options-selection__option-value-name")
+            for opt in options:
+                sizes.append(opt.text)
+        except Exception as e:
+            print("Error getting product sizes")
+            print(e)
+        finally:
+            return sizes
         
     def get_description(self, driver) -> str:
+        description = ""
         try:
             description_element = driver.find_element(By.CLASS_NAME, "product-description")
-            texts = description_element.find_elements(By.TAG_NAME, "span")
+            texts = description_element.find_elements(By.TAG_NAME, "p")
             full_text = [t.text for t in texts]
-            return "\n".join(full_text)
+            if all(full_text) != None:
+                description = "\n".join(full_text)
         except Exception as e:
             print("Error getting product description")
             print(e)
-            return ""
+        finally:
+            return description
         
     def get_details_and_care(self, driver) -> list[str, str]:
         try:

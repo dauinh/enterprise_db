@@ -11,9 +11,11 @@ collections ~ specializations
     - [ ] Refactor to `run_crawler.py`
     - [ ] Write test
     - [x] Get product details
+    - [x] Fix product detail size and color
 - [ ] Check overlapping products
 - [ ] Redesign ER model
 
+> Product description use `<p>` and `<span>` interchangbly, so it's diffifcult to completely scrape
 
 ### Run tests
 In `webscrape` directory, run `python -m pytest`
