@@ -13,6 +13,7 @@ collections ~ specializations
     - [x] Get product details
     - [x] Fix product detail size and color
     - [ ] Implement start, stop range for parsing product info
+    - [ ] Save data, then check refactor
 - [ ] Check overlapping products
 - [ ] Redesign ER model
 
