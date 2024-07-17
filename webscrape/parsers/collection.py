@@ -5,8 +5,9 @@ from webscrape.crawler import Crawler
 from webscrape.config import BASE_URL
 
 class CollectionParser:
-    def __init__(self):
+    def __init__(self, collection_file: str):
         self.crawler = Crawler()
+        self.collection_file = collection_file
         self.driver = self.crawler.driver
         self.url = BASE_URL + "/collections/"
 
@@ -15,7 +16,7 @@ class CollectionParser:
         try:
             self.crawler.fetch(self.url)
             urls = self.get_collections()
-            self.crawler.save_urls("data/collections.csv", urls)
+            self.crawler.save_urls(self.collection_file, urls)
         except Exception as e:
             print(e)                                 
         finally:

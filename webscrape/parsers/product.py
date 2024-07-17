@@ -10,15 +10,24 @@ from webscrape.storage import CSVStorage
 from webscrape.config import BASE_URL
 
 class ProductParser:
+    def __init__(self, collection_file: str, collection_dir: str, products_file: str) -> None:
+        self.collections = CSVStorage(collection_file).read()
+        if collection_dir[-1] == '/':
+            self.collection_dir = collection_dir[:-1]
+        else:
+            self.collection_dir = collection_dir
+        self.collection_files = [f for f in os.listdir(self.collection_dir)]
+        self.products_file = products_file
+
+
     def parse_urls_per_collection(self) -> None:
         """Parse product urls by collection from given Muji collection page."""
-        collections = CSVStorage("data/collections.csv").read()
-        for i, c in enumerate(collections):
+        for i, c in enumerate(self.collections):
             # if i > 2: break
             print(i, c)
             crawler = Crawler()
             url = c[0]
-            save_file_name = f"data/collections/{url.split("/")[-1]}.csv"
+            save_file_name = f"{self.collection_dir}/{url.split("/")[-1]}.csv"
             try:
                 crawler.fetch(url)
                 res = self.get_urls_per_collection(crawler)
@@ -83,7 +92,7 @@ class ProductParser:
         return results
 
     def parse_product_info(self, start: int = 0, restart: bool = False) -> None:
-        products_file = CSVStorage("data/products.csv")
+        products_file = CSVStorage(self.products_file)
 
         if start == 0 and restart:
             products_file.clear()
@@ -100,14 +109,13 @@ class ProductParser:
             products_file.save(header)
 
         # iterate each collection
-        collection_files = [f for f in os.listdir("data/collections")]
-        if start >= len(collection_files):
+        if start >= len(self.collection_files):
             start = 0
-        for i, collection in enumerate(collection_files):
+        for i, collection in enumerate(self.collection_files):
             if i < start: continue
             print("\n--------------------------------")
             print(i, collection)
-            product_urls = CSVStorage(f"data/collections/{collection}").read()
+            product_urls = CSVStorage(f"{self.collection_dir}/{collection}").read()
 
             # iterate each product url
             for i, url in enumerate(product_urls):

@@ -11,6 +11,7 @@ class TestCollectionParser:
         yield parser
         parser.crawler.quit()
 
+
     @pytest.fixture(scope="module")
     def urls(self, parser):
         parser.url = "https://www.muji.us/collections/"
@@ -23,7 +24,7 @@ class TestCollectionParser:
         assert all(urls) != None, "Some urls are empty" 
 
 
-    def test_save_collections(self, tmp_path, parser, urls):
+    def test_save_collections(self, tmpdir, parser, urls):
         some_expected = [
             'https://www.muji.us/collections/apparel',
             'https://www.muji.us/collections/new-arrivals',
@@ -36,11 +37,9 @@ class TestCollectionParser:
             'https://www.muji.us/collections/home',
             'https://www.muji.us/collections/food'
         ]
-        d = tmp_path / "sub"
-        d.mkdir()
-        p = d / "collections.csv"
-        parser.crawler.save_urls(p, urls)
-        collections = CSVStorage(p).read()
+        temp_path = tmpdir.mkdir("data").join("collections.csv")
+        parser.crawler.save_urls(temp_path, urls)
+        collections = CSVStorage(temp_path).read()
         collection_map = set([c[0] for c in collections])
         for e in some_expected:
             assert e in collection_map
