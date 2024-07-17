@@ -1,7 +1,6 @@
 # webscrape/tests/test_crawler.py
 import pytest
-from selenium.webdriver.common.by import By
-from crawler import Crawler
+from webscrape.crawler import Crawler
 
 
 @pytest.fixture(scope="module")

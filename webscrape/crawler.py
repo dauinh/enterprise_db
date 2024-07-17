@@ -1,52 +1,33 @@
 # webscrape/crawler.py
-import re
-
 from selenium import webdriver
-from selenium.webdriver.common.by import By
+from webscrape.storage import CSVStorage
 
-from storage import CVSStorage
-
+options = webdriver.FirefoxOptions()
+options.add_argument("--headless")
+options.add_argument("--disable-blink-features=AutomationControlled")
 
 class Crawler:
     def __init__(self):
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Firefox(options=options)
+        self.current_page = None
+        self.driver.delete_all_cookies()
 
     def fetch(self, url):
         self.driver.get(url)
+        self.current_page = url
         return self.driver.page_source
 
-    def parse_collections_links(self):
-        links = self.driver.find_elements(By.TAG_NAME, "a")
-        results = []
-        for l in links:
-            url = l.get_attribute("href")
-            x = re.search(".*/collections/[\w-]*$", url)
-            if x:
-                results.append(url)
-        return results
+    def save_urls(self, file_name: str, urls: list) -> None:
+        """Save scraped urls to CSV file.
 
-    def save_collections(self, links: list) -> None:
-        """Save collection titles to CSV file.
-        This function appends to existing CSV file, i.e. does not overwrite.
-
-        Parameters:
-            links (list): a list of urls that is `https://www.muji.us/collections/*`
+        Parameter:
+            file_name (str): name of file
+            urls (list): a list of urls
         """
-        save_file = CVSStorage("data/collections.csv")
-        save_file.save(["No", "Collection"])
-        for i, l in enumerate(links):
-            collection = l.split("/")[-1]
-            save_file.save([i + 1, collection])
+        save_file = CSVStorage("data/" + file_name + ".csv")
+        save_file.clear()
+        for u in urls:
+            save_file.save([u])
 
     def quit(self):
         self.driver.quit()
-
-
-if __name__ == "__main__":
-    crawler = Crawler()
-    url = "https://www.muji.us/collections/"
-    html = crawler.fetch(url)
-    x = re.search("<title>Collections - MUJI USA</title>", html)
-    if x:
-        print("found it")
-    crawler.quit()
