@@ -12,8 +12,9 @@ collections ~ specializations
     - [ ] Write test
     - [x] Get product details
     - [x] Fix product detail size and color
-    - [ ] Implement start, stop range for parsing product info
-    - [ ] Save data, then check refactor
+    - [x] Implement start range for parsing product info
+    - [x] Save data, then check refactor
+    - [ ] Implement saving error messages/ failed urls
 - [ ] Check overlapping products
 - [ ] Redesign ER model
 

@@ -1,5 +1,5 @@
 # webscrape/parsers/product.py
-from os import listdir
+import os
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from webscrape.crawler import Crawler
 from webscrape.storage import CSVStorage
+from webscrape.config import BASE_URL
 
 class ProductParser:
     def parse_urls_per_collection(self) -> None:
@@ -81,26 +82,29 @@ class ProductParser:
 
         return results
 
-    def parse_product_info(self) -> None:
+    def parse_product_info(self, start: int = 0, restart: bool = False) -> None:
         products_file = CSVStorage("data/products.csv")
-        # products_file.clear()
-        # header = [
-        #     "Collection",
-        #     "Title",
-        #     "Current price",
-        #     "Colors",
-        #     "Sizes",
-        #     "Description",
-        #     "Product details",
-        #     "Materials & care",
-        # ]
-        # products_file.save(header)
+
+        if start == 0 and restart:
+            products_file.clear()
+            header = [
+                "Collection",
+                "Title",
+                "Current price",
+                "Colors",
+                "Sizes",
+                "Description",
+                "Product details",
+                "Materials & care",
+            ]
+            products_file.save(header)
 
         # iterate each collection
-        collection_files = [f for f in listdir("data/collections")]
+        collection_files = [f for f in os.listdir("data/collections")]
+        if start >= len(collection_files):
+            start = 0
         for i, collection in enumerate(collection_files):
-            if i < 80: continue
-            # if i > 4: break
+            if i < start: continue
             print("\n--------------------------------")
             print(i, collection)
             product_urls = CSVStorage(f"data/collections/{collection}").read()
@@ -247,7 +251,3 @@ class ProductParser:
         finally:
             return details, care
 
-
-if __name__ == "__main__":
-    product_parser = ProductParser()
-    product_parser.parse_product_info()

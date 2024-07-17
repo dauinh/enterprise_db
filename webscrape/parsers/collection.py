@@ -17,7 +17,7 @@ class CollectionParser:
             urls = self.get_collections()
             self.crawler.save_urls("collections", urls)
         except Exception as e:
-            print(e)
+            print(e)                                 
         finally:
             self.crawler.quit()
 

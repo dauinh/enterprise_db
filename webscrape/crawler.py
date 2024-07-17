@@ -1,6 +1,6 @@
 # webscrape/crawler.py
 from selenium import webdriver
-from storage import CSVStorage
+from webscrape.storage import CSVStorage
 
 options = webdriver.FirefoxOptions()
 options.add_argument("--headless")
