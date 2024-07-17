@@ -24,7 +24,7 @@ class Crawler:
             file_name (str): name of file
             urls (list): a list of urls
         """
-        save_file = CSVStorage("data/" + file_name + ".csv")
+        save_file = CSVStorage(file_name)
         save_file.clear()
         for u in urls:
             save_file.save([u])

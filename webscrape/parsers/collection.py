@@ -15,7 +15,7 @@ class CollectionParser:
         try:
             self.crawler.fetch(self.url)
             urls = self.get_collections()
-            self.crawler.save_urls("collections", urls)
+            self.crawler.save_urls("data/collections.csv", urls)
         except Exception as e:
             print(e)                                 
         finally:

@@ -18,7 +18,7 @@ class ProductParser:
             print(i, c)
             crawler = Crawler()
             url = c[0]
-            save_file_name = "collections/" + url.split("/")[-1]
+            save_file_name = f"data/collections/{url.split("/")[-1]}.csv"
             try:
                 crawler.fetch(url)
                 res = self.get_urls_per_collection(crawler)
