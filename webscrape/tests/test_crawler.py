@@ -10,7 +10,6 @@ class TestCrawler:
         yield crawler
         crawler.quit()
 
-
     def test_fetch(self, crawler):
         url = "https://www.muji.us/collections/"
         crawler.fetch(url)

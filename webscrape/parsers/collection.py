@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from webscrape.crawler import Crawler
 from webscrape.config import BASE_URL
 
+
 class CollectionParser:
     def __init__(self, collection_file: str):
         self.crawler = Crawler()
@@ -18,7 +19,7 @@ class CollectionParser:
             urls = self.get_collections()
             self.crawler.save_urls(self.collection_file, urls)
         except Exception as e:
-            print(e)                                 
+            print(e)
         finally:
             self.crawler.quit()
 

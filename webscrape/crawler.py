@@ -6,6 +6,7 @@ options = webdriver.FirefoxOptions()
 options.add_argument("--headless")
 options.add_argument("--disable-blink-features=AutomationControlled")
 
+
 class Crawler:
     def __init__(self):
         self.driver = webdriver.Firefox(options=options)

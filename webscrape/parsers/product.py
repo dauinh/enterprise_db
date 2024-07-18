@@ -9,16 +9,18 @@ from webscrape.crawler import Crawler
 from webscrape.storage import CSVStorage
 from webscrape.config import BASE_URL
 
+
 class ProductParser:
-    def __init__(self, collection_file: str, collection_dir: str, products_file: str) -> None:
+    def __init__(
+        self, collection_file: str, collection_dir: str, products_file: str
+    ) -> None:
         self.collections = CSVStorage(collection_file).read()
-        if collection_dir[-1] == '/':
+        if collection_dir[-1] == "/":
             self.collection_dir = collection_dir[:-1]
         else:
             self.collection_dir = collection_dir
         self.collection_files = [f for f in os.listdir(self.collection_dir)]
         self.products_file = products_file
-
 
     def parse_urls_per_collection(self) -> None:
         """Parse product urls by collection from given Muji collection page."""
@@ -27,7 +29,7 @@ class ProductParser:
             print(i, c)
             crawler = Crawler()
             url = c[0]
-            save_file_name = f"{self.collection_dir}/{url.split("/")[-1]}.csv"
+            save_file_name = f"{self.collection_dir}/{url.split(" / ")[-1]}.csv"
             try:
                 crawler.fetch(url)
                 res = self.get_urls_per_collection(crawler)
@@ -112,7 +114,8 @@ class ProductParser:
         if start >= len(self.collection_files):
             start = 0
         for i, collection in enumerate(self.collection_files):
-            if i < start: continue
+            if i < start:
+                continue
             print("\n--------------------------------")
             print(i, collection)
             product_urls = CSVStorage(f"{self.collection_dir}/{collection}").read()
@@ -132,7 +135,6 @@ class ProductParser:
                     products_file.save([collection[:-4]] + info)
                 except Exception as e:
                     print(e)
-    
 
     def get_product_info(self, url) -> list:
         crawler = Crawler()
@@ -258,4 +260,3 @@ class ProductParser:
             print(e)
         finally:
             return details, care
-

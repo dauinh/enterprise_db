@@ -12,7 +12,6 @@ class TestProductParser:
     def parser(self):
         return ProductParser()
 
-
     @pytest.fixture(scope="module")
     def collections(self):
         parser = CollectionParser()
@@ -20,7 +19,6 @@ class TestProductParser:
         parser.crawler.fetch(parser.url)
         yield parser.get_collections()
         parser.crawler.quit()
-
 
     def test_parse_urls_per_collection(self, collections):
         print(collections)
