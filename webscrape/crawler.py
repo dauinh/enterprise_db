@@ -14,9 +14,12 @@ class Crawler:
         self.driver.delete_all_cookies()
 
     def fetch(self, url):
-        self.driver.get(url)
         self.current_page = url
-        return self.driver.page_source
+        try:
+            self.driver.get(url)
+            return self.driver.page_source
+        except Exception as e:
+            print(e)
 
     def save_urls(self, file_name: str, urls: list) -> None:
         """Save scraped urls to CSV file.
