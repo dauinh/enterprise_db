@@ -9,6 +9,7 @@ def crawler():
     yield crawler
     crawler.quit()
 
+
 def test_fetch(crawler):
     url = "https://www.muji.us/"
     crawler.fetch(url)

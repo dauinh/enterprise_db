@@ -12,23 +12,20 @@ from webscrape.config import BASE_URL
 
 class ProductParser:
     def __init__(
-        self, collection_file: str, collection_dir: str, products_file: str
+        self, collection_urls_file: str, collection_dir: str, products_file: str
     ) -> None:
-        self.collections = CSVStorage(collection_file).read()
-        if collection_dir[-1] == "/":
-            self.collection_dir = collection_dir[:-1]
-        else:
-            self.collection_dir = collection_dir
-        self.collection_files = [f for f in os.listdir(self.collection_dir)]
+        urls = CSVStorage(collection_urls_file).read()
+        self.collections = [u[0] for u in urls]
+        self.collection_dir = collection_dir
+        # self.collection_files = [f for f in os.listdir(self.collection_dir)]
         self.products_file = products_file
 
     def parse_urls_per_collection(self) -> None:
-        """Parse product urls by collection from given Muji collection page."""
-        for i, c in enumerate(self.collections):
+        """Parse product urls by collection from given collection page."""
+        for i, url in enumerate(self.collections):
             # if i > 2: break
-            print(i, c)
+            print(i, url)
             crawler = Crawler()
-            url = c[0]
             save_file_name = f"{self.collection_dir}/{url.split(" / ")[-1]}.csv"
             try:
                 crawler.fetch(url)

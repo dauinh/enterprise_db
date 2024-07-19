@@ -26,7 +26,7 @@ class CollectionParser:
                 unique.add(url)
 
         return results
-    
+
     def run(self) -> None:
         """Parse collections urls from Muji Collections page."""
         try:
