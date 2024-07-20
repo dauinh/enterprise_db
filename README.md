@@ -30,7 +30,7 @@
 In `webscrape` directory, run `python -m pytest`
 
 ## Muji Analysis
-- [ ] Install necessary packages
+- [x] Install necessary packages
 
 #### 1. Data cleaning & transform
 - [ ] Check overlapping products
