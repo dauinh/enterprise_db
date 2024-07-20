@@ -1,5 +1,6 @@
 # webscrape/parsers/product.py
 import os
+from pathlib import Path
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -16,13 +17,14 @@ class ProductParser:
     ) -> None:
         urls = CSVStorage(collection_urls_file).read()
         self.collections = [u[0] for u in urls]
-        self.collection_dir = collection_dir
+        self.collection_dir = Path(collection_dir)
         self.products_file = products_file
 
     def parse_urls_per_collection(self) -> None:
         """Parse product urls by collection from given collection page."""
         for i, url in enumerate(self.collections):
-            # if i > 2: break
+            # if i < 1: continue
+            # if i > 1: break
             print(i, url)
             crawler = Crawler()
             collection = url.split("/")[-1]
@@ -43,9 +45,6 @@ class ProductParser:
         crawler.driver.implicitly_wait(2)
         products = crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
-        # Parse by alternative method
-        if len(products) == 0:
-            results = self.get_from_alt_collection(crawler)
 
         unique = set()
         for p in products:
@@ -53,6 +52,10 @@ class ProductParser:
             if url and url not in unique:
                 results.append(url)
                 unique.add(url)
+
+        # Parse by alternative method
+        if len(results) == 0:
+            results = self.get_from_alt_collection(crawler)
 
         return results
 

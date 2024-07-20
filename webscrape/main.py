@@ -8,7 +8,7 @@ if __name__ == "__main__":
         # collection_parser.run()
 
         product_parser = ProductParser(
-            "data/collections.csv", "data/collections", "data/products.csv"
+            "data/collections.csv", "data/collections2", "data/products2.csv"
         )
         product_parser.parse_urls_per_collection()
         # product_parser.parse_product_info(start=151)
