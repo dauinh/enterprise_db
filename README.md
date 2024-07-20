@@ -33,8 +33,8 @@ In `webscrape` directory, run `python -m pytest`
 - [x] Install necessary packages
 
 #### 1. Data cleaning & transform
-- [ ] Check overlapping products
-- [ ] Add quantity
+- [x] Check overlapping products
+- [x] Add quantity
 
 ## Muji DB
 - [ ] Redesign ER model
