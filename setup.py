@@ -12,6 +12,8 @@ setup(
         'webdriver-manager==4.0.1',
         'black==24.2.0',
         'setuptools==70.3.0',
+        'jupyter',
+        'pandas==2.2.2'
     ],
     entry_points={
         'console_scripts': [
