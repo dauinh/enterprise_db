@@ -50,6 +50,8 @@ class ProductParser:
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
             if url and url not in unique:
+                if "collections" not in url or "products" not in url:
+                    url = "products/" + url
                 results.append(url)
                 unique.add(url)
 

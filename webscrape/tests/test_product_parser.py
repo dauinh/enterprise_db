@@ -46,7 +46,34 @@ def test_init(parser):
         assert url[:5] == "https"
 
 
+@pytest.mark.skip
+def test_get_urls_per_collection():
+    pass
+
+
+@pytest.mark.skip
+def test_get_from_alt_collection():
+    pass
+
+
 def test_parse_urls_per_collection(parser, collection_dir):
     parser.parse_urls_per_collection()
     collection_files = [f for f in os.listdir(collection_dir)]
     assert len(collection_files) == 5
+    for file in collection_files:
+        collection = file.replace(".csv", "")
+        with open(collection_dir / file, "r") as f:
+            reader = csv.reader(f)
+            urls = [x[0] for x in reader]
+            for url in urls:
+                assert collection in url or "products" in url
+
+
+@pytest.mark.skip
+def test_parse_product_info():
+    pass
+
+
+@pytest.mark.skip
+def test_get_product_info():
+    pass
