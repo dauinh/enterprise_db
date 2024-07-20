@@ -6,6 +6,7 @@ options = webdriver.FirefoxOptions()
 options.add_argument("--headless")
 options.add_argument("--disable-blink-features=AutomationControlled")
 
+
 class Crawler:
     def __init__(self):
         self.driver = webdriver.Firefox(options=options)
@@ -13,9 +14,12 @@ class Crawler:
         self.driver.delete_all_cookies()
 
     def fetch(self, url):
-        self.driver.get(url)
         self.current_page = url
-        return self.driver.page_source
+        try:
+            self.driver.get(url)
+            return self.driver.page_source
+        except Exception as e:
+            print(e)
 
     def save_urls(self, file_name: str, urls: list) -> None:
         """Save scraped urls to CSV file.
@@ -24,10 +28,10 @@ class Crawler:
             file_name (str): name of file
             urls (list): a list of urls
         """
-        save_file = CSVStorage("data/" + file_name + ".csv")
+        save_file = CSVStorage(file_name)
         save_file.clear()
         for u in urls:
-            save_file.save([u])
+            save_file.save(u)
 
     def quit(self):
         self.driver.quit()
