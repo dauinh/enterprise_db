@@ -5,3 +5,6 @@ Cannot scrape home-storage
 Cannot scrape bathroom-accessories
 Cannot scrape living-dining
 Cannot scrape furniture
+
+muji-best-seller-products.csv
+back-to-school-dorm-room-essentials.csv

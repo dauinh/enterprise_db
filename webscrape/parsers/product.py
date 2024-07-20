@@ -1,5 +1,6 @@
 # webscrape/parsers/product.py
 import os
+from pathlib import Path
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,44 +10,54 @@ from webscrape.crawler import Crawler
 from webscrape.storage import CSVStorage
 from webscrape.config import BASE_URL
 
+
 class ProductParser:
+    def __init__(
+        self, collection_urls_file: str, collection_dir: str, products_file: str
+    ) -> None:
+        urls = CSVStorage(collection_urls_file).read()
+        self.collections = [u[0] for u in urls]
+        self.collection_dir = Path(collection_dir)
+        self.products_file = products_file
+
     def parse_urls_per_collection(self) -> None:
-        """Parse product urls by collection from given Muji collection page."""
-        collections = CSVStorage("data/collections.csv").read()
-        for i, c in enumerate(collections):
-            # if i > 2: break
-            print(i, c)
+        """Parse product urls by collection from given collection page."""
+        for i, url in enumerate(self.collections):
+            # if i < 1: continue
+            # if i > 1: break
+            print(i, url)
             crawler = Crawler()
-            url = c[0]
-            save_file_name = "collections/" + url.split("/")[-1]
+            collection = url.split("/")[-1]
+            save_file = self.collection_dir / (collection + ".csv")
             try:
-                crawler.fetch(url)
-                res = self.get_urls_per_collection(crawler)
-                if not res:
-                    print("Cannot scrape", save_file_name)
-                else:
-                    crawler.save_urls(save_file_name, res)
+                res = self.get_urls_per_collection(crawler, url)
+                if res:
+                    crawler.save_urls(save_file, res)
             except Exception as e:
-                print("Cannot scrape", save_file_name)
+                print("Cannot scrape", collection)
                 print(e)
                 continue
             finally:
                 crawler.quit()
 
-    def get_urls_per_collection(self, crawler: Crawler) -> list:
+    def get_urls_per_collection(self, crawler: Crawler, url: str) -> list:
+        crawler.fetch(url)
         crawler.driver.implicitly_wait(2)
         products = crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
-        # Parse by alternative method
-        if len(products) == 0:
-            results = self.get_from_alt_collection(crawler)
 
         unique = set()
         for p in products:
             url = p.get_attribute("data-product-quickshop-url")
             if url and url not in unique:
+                if "collections" not in url or "products" not in url:
+                    url = "products/" + url
                 results.append(url)
                 unique.add(url)
+
+        # Parse by alternative method
+        if len(results) == 0:
+            results = self.get_from_alt_collection(crawler)
 
         return results
 
@@ -83,7 +94,8 @@ class ProductParser:
         return results
 
     def parse_product_info(self, start: int = 0, restart: bool = False) -> None:
-        products_file = CSVStorage("data/products.csv")
+        products_file = CSVStorage(self.products_file)
+        collection_files = [f for f in os.listdir(self.collection_dir)]
 
         if start == 0 and restart:
             products_file.clear()
@@ -100,14 +112,14 @@ class ProductParser:
             products_file.save(header)
 
         # iterate each collection
-        collection_files = [f for f in os.listdir("data/collections")]
         if start >= len(collection_files):
             start = 0
         for i, collection in enumerate(collection_files):
-            if i < start: continue
+            if i < start:
+                continue
             print("\n--------------------------------")
             print(i, collection)
-            product_urls = CSVStorage(f"data/collections/{collection}").read()
+            product_urls = CSVStorage(f"{self.collection_dir}/{collection}").read()
 
             # iterate each product url
             for i, url in enumerate(product_urls):
@@ -124,7 +136,6 @@ class ProductParser:
                     products_file.save([collection[:-4]] + info)
                 except Exception as e:
                     print(e)
-    
 
     def get_product_info(self, url) -> list:
         crawler = Crawler()
@@ -250,4 +261,3 @@ class ProductParser:
             print(e)
         finally:
             return details, care
-

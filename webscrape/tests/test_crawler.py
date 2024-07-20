@@ -11,6 +11,6 @@ def crawler():
 
 
 def test_fetch(crawler):
-    url = "https://www.muji.us/collections/"
+    url = "https://www.muji.us/"
     crawler.fetch(url)
-    assert "Collections — MUJI USA" == crawler.driver.title
+    assert "MUJI USA" == crawler.driver.title

@@ -14,7 +14,7 @@ class CSVStorage:
     def save(self, data) -> None:
         with open(self.file_path, mode="a", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(data)
+            writer.writerow([data])
 
     def read(self) -> list:
         data = []
