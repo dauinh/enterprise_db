@@ -29,10 +29,9 @@
 
 In `webscrape` directory, run `python -m pytest`
 
-## Muji Analysis
-- [x] Install necessary packages
+#### 4. Data cleaning & transform
 
-#### 1. Data cleaning & transform
+- [x] Install necessary packages
 - [x] Check overlapping products
 - [x] Add quantity
 
