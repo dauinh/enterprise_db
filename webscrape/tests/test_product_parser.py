@@ -1,4 +1,5 @@
 # webscrape/tests/test_crawler.py
+import os
 import csv
 import pytest
 from unittest.mock import patch
@@ -23,15 +24,18 @@ def collection_urls_file(tmp_path_factory):
     ]
     temp_dir = tmp_path_factory.mktemp("data")
     temp_file = temp_dir / "collection.csv"
-    with open(temp_file, "a") as f:
+    with open(temp_file, "w") as f:
         writer = csv.writer(f)
-        writer.writerow(urls)
+        for u in urls:
+            writer.writerow([u])
     return temp_file
 
 
 @pytest.fixture(scope="module")
 def collection_dir(tmp_path_factory):
-    return tmp_path_factory.mktemp("data") / "collections"
+    path = tmp_path_factory.mktemp("data") / "collections"
+    path.mkdir()
+    return path
 
 
 @pytest.fixture(scope="module")
@@ -42,11 +46,14 @@ def parser(tmp_path_factory, collection_urls_file, collection_dir):
 
 
 def test_init(parser):
+    assert len(parser.collections) == 10
     for url in parser.collections:
         assert url[:5] == "https"
 
 
-@pytest.mark.skip
-def test_parse_urls_per_collection(collections):
-    print(collections)
+def test_parse_urls_per_collection(parser, collection_dir):
+    print(parser.collections)
+    parser.parse_urls_per_collection()
+    collection_files = [f for f in os.listdir(collection_dir)]
+    print(collection_files)
     assert False

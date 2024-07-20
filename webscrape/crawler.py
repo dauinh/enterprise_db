@@ -31,7 +31,7 @@ class Crawler:
         save_file = CSVStorage(file_name)
         save_file.clear()
         for u in urls:
-            save_file.save([u])
+            save_file.save(u)
 
     def quit(self):
         self.driver.quit()

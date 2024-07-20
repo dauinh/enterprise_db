@@ -17,7 +17,6 @@ class ProductParser:
         urls = CSVStorage(collection_urls_file).read()
         self.collections = [u[0] for u in urls]
         self.collection_dir = collection_dir
-        # self.collection_files = [f for f in os.listdir(self.collection_dir)]
         self.products_file = products_file
 
     def parse_urls_per_collection(self) -> None:
@@ -26,22 +25,21 @@ class ProductParser:
             # if i > 2: break
             print(i, url)
             crawler = Crawler()
-            save_file_name = f"{self.collection_dir}/{url.split(" / ")[-1]}.csv"
+            collection = url.split("/")[-1]
+            save_file = self.collection_dir / (collection + ".csv")
             try:
-                crawler.fetch(url)
-                res = self.get_urls_per_collection(crawler)
-                if not res:
-                    print("Cannot scrape", save_file_name)
-                else:
-                    crawler.save_urls(save_file_name, res)
+                res = self.get_urls_per_collection(crawler, url)
+                if res:
+                    crawler.save_urls(save_file, res)
             except Exception as e:
-                print("Cannot scrape", save_file_name)
+                print("Cannot scrape", collection)
                 print(e)
                 continue
             finally:
                 crawler.quit()
 
-    def get_urls_per_collection(self, crawler: Crawler) -> list:
+    def get_urls_per_collection(self, crawler: Crawler, url: str) -> list:
+        crawler.fetch(url)
         crawler.driver.implicitly_wait(2)
         products = crawler.driver.find_elements(By.CLASS_NAME, "productgrid--item")
         results = []
@@ -92,6 +90,7 @@ class ProductParser:
 
     def parse_product_info(self, start: int = 0, restart: bool = False) -> None:
         products_file = CSVStorage(self.products_file)
+        collection_files = [f for f in os.listdir(self.collection_dir)]
 
         if start == 0 and restart:
             products_file.clear()
@@ -108,9 +107,9 @@ class ProductParser:
             products_file.save(header)
 
         # iterate each collection
-        if start >= len(self.collection_files):
+        if start >= len(collection_files):
             start = 0
-        for i, collection in enumerate(self.collection_files):
+        for i, collection in enumerate(collection_files):
             if i < start:
                 continue
             print("\n--------------------------------")
