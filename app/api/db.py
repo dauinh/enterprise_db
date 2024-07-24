@@ -5,6 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker
 
+from models.products import Base
+from utils import import_data
+
 load_dotenv()
 
 # Create connection string
@@ -24,13 +27,4 @@ Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(engine)
 
 # Import data
-from models.products import Product, Base
-from sqlalchemy import select
-
-
-# with Session() as session:
-#     statement = select(Product)
-#     rows = session.execute(statement)
-#     for r in rows:
-#         print(r)
-    
+import_data(Session())
