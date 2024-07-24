@@ -1,11 +1,9 @@
 import os
-
-import mysql.connector
 from dotenv import load_dotenv
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import sessionmaker
-
 
 load_dotenv()
 
@@ -16,9 +14,23 @@ url = URL.create(
     password=os.getenv("PASSWORD"),
     host="localhost",
     database=os.getenv("DB_NAME"),
-    port=5432
+    port=3306
 )
 
 # Establish connection via SQLAlchemy
 engine = create_engine(url)
-session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(engine)
+
+# Import data
+from models.products import Product, Base
+from sqlalchemy import select
+
+
+# with Session() as session:
+#     statement = select(Product)
+#     rows = session.execute(statement)
+#     for r in rows:
+#         print(r)
+    
