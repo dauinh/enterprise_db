@@ -17,7 +17,7 @@ url = URL.create(
     password=os.getenv("PASSWORD"),
     host="localhost",
     database=os.getenv("DB_NAME"),
-    port=3306
+    port=3306,
 )
 
 # Establish connection via SQLAlchemy
