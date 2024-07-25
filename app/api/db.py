@@ -3,10 +3,7 @@ from dotenv import load_dotenv
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy.orm import sessionmaker
-
-from models.products import Base
-from utils import import_data
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
@@ -22,9 +19,6 @@ url = URL.create(
 
 # Establish connection via SQLAlchemy
 engine = create_engine(url)
-Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.create_all(engine)
-
-# Import data
-import_data(Session())
+Base = declarative_base()
