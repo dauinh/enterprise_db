@@ -36,4 +36,13 @@ In `webscrape` directory, run `python -m pytest`
 - [x] Add quantity
 
 ## Muji DB
+- [ ] Set up FastAPI and SQLalchemy
+- [ ] Implement APIs for data fetching
+- [ ] Test
+- [ ] Implements customer/user interface and workflow
+- [ ] Test
+- [ ] Implement transaction APIs
+- [ ] Test
+- [ ] Generate data for store
+- [ ] Use Selenium to generate user
 - [ ] Redesign ER model

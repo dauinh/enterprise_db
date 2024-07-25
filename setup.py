@@ -8,12 +8,8 @@ setup(
         'mysql-connector-python==8.4.0',
         'python-dotenv==1.0.1',
         'selenium==4.22.0',
-        'pytest==8.2.2',
-        'webdriver-manager==4.0.1',
-        'black==24.2.0',
-        'setuptools==70.3.0',
-        'jupyter',
-        'pandas==2.2.2'
+        'pytest==8.2.2'
+        'setuptools==70.3.0'
     ],
     entry_points={
         'console_scripts': [
