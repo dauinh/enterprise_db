@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..models.products import Product
+from api.models.products import Product
 
 
 def get_total(db: Session):
