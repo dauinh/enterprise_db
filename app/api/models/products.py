@@ -1,19 +1,23 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String, Boolean, Numeric
 import uuid
 
-Base = declarative_base()
+from api.db import Base
 
 
 class Product(Base):
     __tablename__ = "products"
 
-    # _uid = Column(String(36), primary_key=True, nullable=False, unique=True, default=uuid.uuid4)
-    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    _uid = Column(
+        String(36),
+        primary_key=True,
+        nullable=False,
+        unique=True,
+        default=lambda: str(uuid.uuid4()),
+    )
+    id = Column(Integer, nullable=False)
     title = Column(String(150))
-    # collections = Column(list[String])
-    current_price = Column(Integer)
-    # colors = Column(list[String])
-    # sizes = Column(list[String])
+    current_price = Column(Numeric)
+    color = Column(String(50))
+    size = Column(String(50))
     is_active = Column(Boolean)
     quantity = Column(Integer)
