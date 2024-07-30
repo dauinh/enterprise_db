@@ -16,24 +16,26 @@ def insert_products(Session: sessionmaker) -> None:
         next(reader)
         for row in reader:
             try:
-                row['current_price'] = float(row['current_price']) if row['current_price'] else 0.0
+                row["current_price"] = (
+                    float(row["current_price"]) if row["current_price"] else 0.0
+                )
             except ValueError:
-                row['current_price'] = 0.0
+                row["current_price"] = 0.0
 
             try:
-                row['color'] = row['color'] if row['color'] else ''
+                row["color"] = row["color"] if row["color"] else ""
             except ValueError:
-                row['color'] = ''
+                row["color"] = ""
 
             try:
-                row['size'] = row['size'] if row['size'] else ''
+                row["size"] = row["size"] if row["size"] else ""
             except ValueError:
-                row['size'] = ''
+                row["size"] = ""
 
             try:
-                row['is_active'] = bool(row['is_active'])
+                row["is_active"] = bool(row["is_active"])
             except ValueError:
-                row['is_active'] = True
+                row["is_active"] = True
 
             data.append(row)
 
@@ -46,7 +48,7 @@ def insert_products(Session: sessionmaker) -> None:
                 session.commit()
             except Exception as e:
                 print(e)
-                print("Cannot insert", row['title'])
+                print("Cannot insert", row["title"])
                 session.rollback()
 
 
@@ -58,4 +60,3 @@ if __name__ == "__main__":
     # with db as session:
     #     statement = select(Product.title)
     #     rows = session.execute(statement).all()
-        
