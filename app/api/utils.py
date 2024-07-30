@@ -55,10 +55,7 @@ if __name__ == "__main__":
     db = SessionLocal()
     insert_products(db)
 
-    with db as session:
-        statement = select(Product.title)
-        rows = session.execute(statement).all()
-        print()
-        for r in rows:
-            print(r)
+    # with db as session:
+    #     statement = select(Product.title)
+    #     rows = session.execute(statement).all()
         
