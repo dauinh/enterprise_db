@@ -9,34 +9,44 @@ from .db import engine, SessionLocal, Base
 
 
 def insert_products(Session: sessionmaker) -> None:
-    file_path = sys.path[0] + "/../data/clean_products.csv"
+    file_path = sys.path[0] + "/../data/products.csv"
     data = []
     with open(file_path, "r") as f:
-        reader = csv.reader(f)
+        reader = csv.DictReader(f)
         next(reader)
         for row in reader:
+            try:
+                row['current_price'] = float(row['current_price']) if row['current_price'] else 0.0
+            except ValueError:
+                row['current_price'] = 0.0
+
+            try:
+                row['color'] = row['color'] if row['color'] else ''
+            except ValueError:
+                row['color'] = ''
+
+            try:
+                row['size'] = row['size'] if row['size'] else ''
+            except ValueError:
+                row['size'] = ''
+
+            try:
+                row['is_active'] = bool(row['is_active'])
+            except ValueError:
+                row['is_active'] = True
+
             data.append(row)
 
     with Session as session:
         for i, row in enumerate(data):
-            if i > 0: break
-            id, title, _, current_price, color, size, is_active, quantity = row
-
-            statement = insert(Product).values(
-                id=id,
-                title=title,
-                current_price=float(current_price) if current_price else 0,
-                color=color if color else "",
-                size=size if size else "",
-                is_active=bool(is_active),
-                quantity=quantity,
-            )
+            # if i < 12335: continue
+            product = Product(**row)
+            session.add(product)
             try:
-                session.execute(statement)
                 session.commit()
             except Exception as e:
                 print(e)
-                print("Cannot insert", title)
+                print("Cannot insert", row['title'])
                 session.rollback()
 
 
@@ -48,6 +58,7 @@ if __name__ == "__main__":
     with db as session:
         statement = select(Product.title)
         rows = session.execute(statement).all()
+        print()
         for r in rows:
             print(r)
         
