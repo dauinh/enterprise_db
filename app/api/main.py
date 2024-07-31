@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from .routers import products
+from .routers import product
 from .db import Base, SessionLocal, engine
 
 Base.metadata.create_all(bind=engine)
@@ -25,4 +25,4 @@ def root():
 
 @app.get("/total")
 def get_total(session: Session = Depends(get_session)) -> int:
-    return products.get_total(session)
+    return product.get_total(session)

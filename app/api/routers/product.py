@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from api.models.products import Product
+from app.api.models.product import Product
 
 
 def get_total(session: Session) -> int:

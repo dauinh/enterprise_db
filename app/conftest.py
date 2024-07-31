@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from api.db import Base
-from api.models.products import Product
+from app.api.models.product import Product
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'

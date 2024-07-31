@@ -5,7 +5,7 @@ from api.db import Base
 
 
 class Product(Base):
-    __tablename__ = "products"
+    __tablename__ = "product"
 
     _uid = Column(
         String(36),

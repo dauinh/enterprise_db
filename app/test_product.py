@@ -1,7 +1,7 @@
 import pytest
 
-from api.models.products import Product
-from api.routers.products import get_total
+from app.api.models.product import Product
+from app.api.routers.product import get_total
 
 
 def test_product(db_session, seed):
