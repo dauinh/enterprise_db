@@ -6,21 +6,25 @@ def get_total(session: Session) -> int:
     return session.query(Product).count()
 
 
-def get_product_by_id(session: Session) -> Product:
+def get_by_id(session: Session) -> Product:
     pass
 
 
-def get_all_product(session: Session) -> Product:
+def get_by_title(session: Session) -> Product:
     pass
 
 
-def create_product(session: Session) -> Product:
+def get_all(session: Session) -> Product:
     pass
 
 
-def update_product(session: Session) -> Product:
+def create(session: Session) -> Product:
     pass
 
 
-def delete_product(session: Session) -> Product:
+def update(session: Session) -> Product:
+    pass
+
+
+def delete_by_id(session: Session) -> Product:
     pass
