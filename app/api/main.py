@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from .routers import product
-from .db import Base, SessionLocal, engine
+from .repos import product
+from .db import engine, SessionLocal, Base
 
 Base.metadata.create_all(bind=engine)
 
@@ -10,12 +10,12 @@ app = FastAPI()
 
 
 # Dependency
-def get_session():
-    session = SessionLocal()
+def get_db():
+    db = SessionLocal()
     try:
-        yield session
+        yield db
     finally:
-        session.close()
+        db.close()
 
 
 @app.get("/")
@@ -24,5 +24,5 @@ def root():
 
 
 @app.get("/total")
-def get_total(session: Session = Depends(get_session)) -> int:
-    return product.get_total(session)
+def get_total(db: Session = Depends(get_db)) -> int:
+    return product.get_total(db)

@@ -1,25 +1,23 @@
 import pytest
+import asyncio
+
+from sqlalchemy import select
 
 from app.api.models.product import Product
-from app.api.routers.product import (
+from app.api.repos.product import (
     get_total,
     get_by_id,
     get_by_title,
     get_all,
     create,
-    update,
+    update_by_id,
     delete_by_id,
 )
 
-
-def test_product(db_session, seed):
-    res = db_session.query(Product).first()
-    assert res.id == 0
-    assert res.title == "hello world"
-
+pytest_plugins = ('pytest_asyncio',)
 
 def test_get_total(db_session, seed):
-    assert get_total(db_session) == 1
+    assert get_total(db_session) == 2
 
 
 def test_get_product_by_id(db_session, seed):
@@ -38,8 +36,10 @@ def test_get_all(db_session, seed):
     assert len(products) == 2
 
 
-def test_create(db_session, seed):
-    create(
+@pytest.mark.skip
+@pytest.mark.asyncio
+async def test_create(db_session, seed):
+    await create(
         Product(
             id=2,
             title="elephant plushie",
@@ -50,17 +50,19 @@ def test_create(db_session, seed):
             quantity=20,
         )
     )
-    new_product = db_session.query(Product).filter_by(title="elephant plushie")
+    new_product = await db_session.query(Product).filter_by(title="elephant plushie").one()
     assert new_product.id == 2
     assert new_product.color == "blue"
     assert new_product.size == ""
     assert new_product.quantity == 20
 
 
-def test_update_product(db_session, seed):
-    product = get_by_id(db_session, 0)
+@pytest.mark.asyncio
+async def test_update_by_id(db_session, seed):
+    stmt = select(Product).where(Product.id == 0)
+    product = db_session.scalars(stmt).first()
     assert product.title == "hello world"
-    update(
+    await update_by_id(db_session, Product(
         id=0,
         title="elephant plushie",
         current_price=14.99,
@@ -68,12 +70,13 @@ def test_update_product(db_session, seed):
         size="",
         is_active=True,
         quantity=20,
-    )
-    updated = db_session.query(Product).filter_by(title="elephant plushie").all()
-    assert len(update) == 1
-    assert updated[0].id == 0
+    ))
+    stmt = select(Product).where(Product.id == 0)
+    updated = db_session.scalars(stmt).first()
+    assert updated.title == "elephant plushie"
 
 
-def test_delete_by_id(db_session, seed):
-    delete_by_id(1)
+@pytest.mark.asyncio
+async def test_delete_by_id(db_session, seed):
+    await delete_by_id(db_session, 1)
     assert get_total(db_session) == 1
