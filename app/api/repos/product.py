@@ -1,6 +1,6 @@
-from sqlalchemy import func, select, update, delete
+from sqlalchemy import func, select, update, delete, insert
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound, ResourceClosedError
+from sqlalchemy.exc import NoResultFound, ResourceClosedError, IntegrityError
 
 from app.api.db import Base
 from app.api.models.product import Product
@@ -38,8 +38,24 @@ def get_all(db: Session, skip: int = 0, limit: int = 12342) -> list[Product]:
         print('Product model not found')
 
 
-async def create(db: Session) -> Product:
-    pass
+async def create(db: Session, product: Product):
+    if get_by_title(db, product.title): 
+        raise IntegrityError('Product already exists!')
+
+    stmt = (
+        insert(Product)
+        .values(
+            title=product.title,
+            current_price=product.current_price,
+            is_active=product.is_active,
+            total_quantity=product.total_quantity,
+        )
+    )
+    try:
+        db.scalars(stmt)
+        db.commit()
+    except ResourceClosedError:
+        print('Result object closed automatically')
 
 
 async def update_by_id(db: Session, product: Product):

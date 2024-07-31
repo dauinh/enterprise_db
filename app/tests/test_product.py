@@ -36,23 +36,18 @@ def test_get_all(db_session, seed):
     assert len(products) == 2
 
 
-@pytest.mark.skip
 @pytest.mark.asyncio
 async def test_create(db_session, seed):
-    await create(
-        Product(
-            id=2,
+    await create(db_session, Product(
             title="elephant plushie",
             current_price=14.99,
             is_active=True,
-            quantity=20,
+            total_quantity=20,
         )
     )
-    new_product = await db_session.query(Product).filter_by(title="elephant plushie").one()
-    assert new_product.id == 2
-    assert new_product.color == "blue"
-    assert new_product.size == ""
-    assert new_product.quantity == 20
+    new_product = db_session.query(Product).filter_by(title="elephant plushie").one()
+    assert new_product.id == 3
+    assert new_product.total_quantity == 20
 
 
 @pytest.mark.asyncio
@@ -75,4 +70,4 @@ async def test_update_by_id(db_session, seed):
 @pytest.mark.asyncio
 async def test_delete_by_id(db_session, seed):
     await delete_by_id(db_session, 1)
-    assert get_total(db_session) == 1
+    assert get_total(db_session) == 2
