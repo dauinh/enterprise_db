@@ -1,7 +1,15 @@
 import pytest
 
 from app.api.models.product import Product
-from app.api.routers.product import get_total, get_by_id, get_by_title, get_all, create, update, delete_by_id
+from app.api.routers.product import (
+    get_total,
+    get_by_id,
+    get_by_title,
+    get_all,
+    create,
+    update,
+    delete_by_id,
+)
 
 
 def test_product(db_session, seed):
@@ -31,7 +39,8 @@ def test_get_all(db_session, seed):
 
 
 def test_create(db_session, seed):
-    create(Product(
+    create(
+        Product(
             id=2,
             title="elephant plushie",
             current_price=14.99,
@@ -39,7 +48,8 @@ def test_create(db_session, seed):
             size="",
             is_active=True,
             quantity=20,
-    ))
+        )
+    )
     new_product = db_session.query(Product).filter_by(title="elephant plushie")
     assert new_product.id == 2
     assert new_product.color == "blue"

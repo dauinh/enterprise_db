@@ -89,7 +89,7 @@ def seed(db_session):
                 size="",
                 is_active=True,
                 quantity=5,
-            )
+            ),
         ]
     )
     db_session.commit()
