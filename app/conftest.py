@@ -1,3 +1,4 @@
+# https://johncox-38620.medium.com/creating-a-test-database-pytest-sqlalchemy-97356f2f02d2
 import os
 import pytest
 from dotenv import load_dotenv
@@ -52,7 +53,6 @@ def drop_create_test_db():
 
 @pytest.fixture
 def db_session(scope="session", autouse=True):
-    drop_create_test_db()
     engine = create_engine(url)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     
@@ -63,3 +63,4 @@ def db_session(scope="session", autouse=True):
     yield db_session
     db_session.rollback()
     db_session.close()
+    drop_create_test_db()
