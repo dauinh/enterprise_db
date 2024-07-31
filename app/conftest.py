@@ -23,6 +23,7 @@ url = URL.create(
     port=3306,
 )
 
+
 def drop_create_test_db():
     # Create connection string without specify which database
     engine = create_engine(
@@ -39,27 +40,28 @@ def drop_create_test_db():
         with engine.connect() as conn:
             conn = conn.execution_options(autocommit=False)
             try:
-                conn.execute(text(f'DROP DATABASE IF EXISTS {TEST_DB_NAME}'))
+                conn.execute(text(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}"))
             except ProgrammingError:
-                print('Could not drop the database, probably does not exist.')
+                print("Could not drop the database, probably does not exist.")
             except OperationalError:
-                print("Could not drop database because it’s being accessed by other users")
+                print(
+                    "Could not drop database because it’s being accessed by other users"
+                )
 
-            conn.execute(text(f'CREATE DATABASE {TEST_DB_NAME}'))
+            conn.execute(text(f"CREATE DATABASE {TEST_DB_NAME}"))
     except Exception as e:
-        print(f'Some other error', e)
-
+        print(f"Some other error", e)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def db_session():
     engine = create_engine(url)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    
+
     Base.metadata.create_all(bind=engine)
     db_session = SessionLocal()
-    
-    print(f'{TEST_DB_NAME} is ready')
+
+    print(f"{TEST_DB_NAME} is ready")
     yield db_session
     db_session.rollback()
     db_session.close()
@@ -77,7 +79,7 @@ def seed(db_session):
                 color="",
                 size="",
                 is_active=True,
-                quantity=15
+                quantity=15,
             )
         ]
     )

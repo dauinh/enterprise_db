@@ -12,6 +12,4 @@ def test_product(db_session, seed):
 
 def test_get_total(db_session, seed):
     res = db_session.query(Product).all()
-    for r in res:
-        print(r.title )
     assert get_total(db_session) == 1

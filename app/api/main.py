@@ -24,5 +24,5 @@ def root():
 
 
 @app.get("/total")
-def get_total(session: Session = Depends(get_session)):
+def get_total(session: Session = Depends(get_session)) -> int:
     return products.get_total(session)
