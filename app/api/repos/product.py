@@ -11,7 +11,7 @@ def get_total(db: Session) -> int:
     try:
         return db.scalars(stmt).one()
     except NoResultFound:
-        print('Product model not found')
+        print("Product model not found")
 
 
 def get_by_id(db: Session, id: int) -> Product:
@@ -19,7 +19,7 @@ def get_by_id(db: Session, id: int) -> Product:
     try:
         return db.scalars(stmt).one()
     except NoResultFound:
-        print(f'Product with id {id} not found')
+        print(f"Product with id {id} not found")
 
 
 def get_by_title(db: Session, title: str) -> Product:
@@ -27,7 +27,7 @@ def get_by_title(db: Session, title: str) -> Product:
     try:
         return db.scalars(stmt).one()
     except NoResultFound:
-        print(f'Product with title {title} not found')
+        print(f"Product with title {title} not found")
 
 
 def get_all(db: Session, skip: int = 0, limit: int = 12342) -> list[Product]:
@@ -35,27 +35,24 @@ def get_all(db: Session, skip: int = 0, limit: int = 12342) -> list[Product]:
     try:
         return db.scalars(stmt).all()
     except NoResultFound:
-        print('Product model not found')
+        print("Product model not found")
 
 
 async def create(db: Session, product: Product):
-    if get_by_title(db, product.title): 
-        raise IntegrityError('Product already exists!')
+    if get_by_title(db, product.title):
+        raise IntegrityError("Product already exists!")
 
-    stmt = (
-        insert(Product)
-        .values(
-            title=product.title,
-            current_price=product.current_price,
-            is_active=product.is_active,
-            total_quantity=product.total_quantity,
-        )
+    stmt = insert(Product).values(
+        title=product.title,
+        current_price=product.current_price,
+        is_active=product.is_active,
+        total_quantity=product.total_quantity,
     )
     try:
         db.scalars(stmt)
         db.commit()
     except ResourceClosedError:
-        print('Result object closed automatically')
+        print("Result object closed automatically")
 
 
 async def update_by_id(db: Session, product: Product):
@@ -73,7 +70,7 @@ async def update_by_id(db: Session, product: Product):
         db.scalars(stmt)
         db.commit()
     except ResourceClosedError:
-        print('Result object closed automatically')
+        print("Result object closed automatically")
 
 
 async def delete_by_id(db: Session, id: int):
@@ -82,4 +79,4 @@ async def delete_by_id(db: Session, id: int):
         db.scalars(stmt)
         db.commit()
     except ResourceClosedError:
-        print('Result object closed automatically')
+        print("Result object closed automatically")

@@ -13,7 +13,9 @@ class Product(Base):
         unique=True,
         default=lambda: str(uuid.uuid4()),
     )
-    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+    id = Column(
+        Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
+    )
     title = Column(String(150))
     current_price = Column(Numeric)
     is_active = Column(Boolean)
