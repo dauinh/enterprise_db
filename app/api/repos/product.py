@@ -1,6 +1,6 @@
 from sqlalchemy import func, select, update, delete
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import ResourceClosedError
+from sqlalchemy.exc import NoResultFound, ResourceClosedError
 
 from app.api.db import Base
 from app.api.models.product import Product
@@ -8,22 +8,34 @@ from app.api.models.product import Product
 
 def get_total(db: Session) -> int:
     stmt = select(func.count(Product.id))
-    return db.scalars(stmt).one()
+    try:
+        return db.scalars(stmt).one()
+    except NoResultFound:
+        print('Product model not found')
 
 
 def get_by_id(db: Session, id: int) -> Product:
     stmt = select(Product).where(Product.id == id)
-    return db.scalars(stmt).one()
+    try:
+        return db.scalars(stmt).one()
+    except NoResultFound:
+        print(f'Product with id {id} not found')
 
 
 def get_by_title(db: Session, title: str) -> Product:
     stmt = select(Product).where(Product.title == title)
-    return db.scalars(stmt).one()
+    try:
+        return db.scalars(stmt).one()
+    except NoResultFound:
+        print(f'Product with title {title} not found')
 
 
 def get_all(db: Session, skip: int = 0, limit: int = 12342) -> list[Product]:
     stmt = select(Product).limit(limit).offset(skip)
-    return db.scalars(stmt).all()
+    try:
+        return db.scalars(stmt).all()
+    except NoResultFound:
+        print('Product model not found')
 
 
 async def create(db: Session) -> Product:
