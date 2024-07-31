@@ -37,12 +37,12 @@ In `webscrape` directory, run `python -m pytest`
 
 ## Muji DB
 - [x] Set up FastAPI and SQLalchemy
-- [x] Implement APIs for data fetching
-- [ ] Test
-- [ ] Implements customer/user interface and workflow
-- [ ] Test
+- [x] Model `product` entity
+- [x] Implement APIs for fetching product data
+- [ ] Model `collection` entity and relationship
+- [ ] Model `attribute` entity and relationship
+- [ ] Implement APIs for collection and product attributes
+- [ ] Implement customer/user interface and workflow
 - [ ] Implement transaction APIs
-- [ ] Test
 - [ ] Generate data for store
 - [ ] Use Selenium to generate user
-- [ ] Redesign ER model

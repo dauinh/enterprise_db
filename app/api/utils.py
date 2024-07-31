@@ -2,9 +2,8 @@ import sys
 import csv
 
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select, insert
 
-from .models.products import Product
+from .models.product import Product
 from .db import engine, SessionLocal, Base
 
 
@@ -56,7 +55,3 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     insert_products(db)
-
-    # with db as session:
-    #     statement = select(Product.title)
-    #     rows = session.execute(statement).all()
