@@ -2,7 +2,6 @@ import sys
 import csv
 
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select, insert
 
 from .models.products import Product
 from .db import engine, SessionLocal, Base

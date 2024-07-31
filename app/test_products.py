@@ -1,21 +1,17 @@
 import pytest
 
 from api.models.products import Product
+from api.routers.products import get_total
 
 
-def test_product(db_session):
-    product = Product(
-        id=0,
-        title="hello world",
-        current_price=2.5,
-        color="",
-        size="",
-        is_active=True,
-        quantity=15
-    )
-    db_session.add(product)
-    db_session.commit()
-
+def test_product(db_session, seed):
     res = db_session.query(Product).first()
     assert res.title == "hello world"
     assert res.id == 0
+
+
+def test_get_total(db_session, seed):
+    res = db_session.query(Product).all()
+    for r in res:
+        print(r.title )
+    assert get_total(db_session) == 1

@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from api.db import Base
-
+from api.models.products import Product
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -51,8 +51,8 @@ def drop_create_test_db():
 
 
 
-@pytest.fixture
-def db_session(scope="session", autouse=True):
+@pytest.fixture(scope="session", autouse=True)
+def db_session():
     engine = create_engine(url)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     
@@ -64,3 +64,21 @@ def db_session(scope="session", autouse=True):
     db_session.rollback()
     db_session.close()
     drop_create_test_db()
+
+
+@pytest.fixture(scope="session")
+def seed(db_session):
+    db_session.add_all(
+        [
+            Product(
+                id=0,
+                title="hello world",
+                current_price=2.5,
+                color="",
+                size="",
+                is_active=True,
+                quantity=15
+            )
+        ]
+    )
+    db_session.commit()
