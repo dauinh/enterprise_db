@@ -56,7 +56,3 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     insert_products(db)
-
-    # with db as session:
-    #     statement = select(Product.title)
-    #     rows = session.execute(statement).all()

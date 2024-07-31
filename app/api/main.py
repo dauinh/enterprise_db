@@ -10,12 +10,12 @@ app = FastAPI()
 
 
 # Dependency
-def get_db():
-    db = SessionLocal()
+def get_session():
+    session = SessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
 @app.get("/")
@@ -24,5 +24,5 @@ def root():
 
 
 @app.get("/total")
-def get_total(db: Session = Depends(get_db)):
-    return products.get_total(db)
+def get_total(session: Session = Depends(get_session)):
+    return products.get_total(session)
