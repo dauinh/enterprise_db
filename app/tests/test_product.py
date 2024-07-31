@@ -20,15 +20,15 @@ def test_get_total(db_session, seed):
     assert get_total(db_session) == 2
 
 
-def test_get_product_by_id(db_session, seed):
-    product = get_by_id(db_session, 0)
-    assert product.id == 0
+def test_get_by_id(db_session, seed):
+    product = get_by_id(db_session, 1)
+    assert product.id == 1
     assert product.title == "hello world"
 
 
 def test_get_by_title(db_session, seed):
     product = get_by_title(db_session, "hello world")
-    assert product.id == 0
+    assert product.id == 1
 
 
 def test_get_all(db_session, seed):
@@ -44,8 +44,6 @@ async def test_create(db_session, seed):
             id=2,
             title="elephant plushie",
             current_price=14.99,
-            color="blue",
-            size="",
             is_active=True,
             quantity=20,
         )
@@ -59,20 +57,18 @@ async def test_create(db_session, seed):
 
 @pytest.mark.asyncio
 async def test_update_by_id(db_session, seed):
-    stmt = select(Product).where(Product.id == 0)
-    product = db_session.scalars(stmt).first()
+    stmt = select(Product).where(Product.id == 1)
+    product = db_session.scalars(stmt).one()
     assert product.title == "hello world"
     await update_by_id(db_session, Product(
-        id=0,
+        id=1,
         title="elephant plushie",
         current_price=14.99,
-        color="blue",
-        size="",
         is_active=True,
-        quantity=20,
+        total_quantity=20,
     ))
-    stmt = select(Product).where(Product.id == 0)
-    updated = db_session.scalars(stmt).first()
+    stmt = select(Product).where(Product.id == 1)
+    updated = db_session.scalars(stmt).one()
     assert updated.title == "elephant plushie"
 
 

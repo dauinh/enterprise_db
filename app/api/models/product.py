@@ -9,15 +9,12 @@ class Product(Base):
 
     _uid = Column(
         String(36),
-        primary_key=True,
         nullable=False,
         unique=True,
         default=lambda: str(uuid.uuid4()),
     )
-    id = Column(Integer, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
     title = Column(String(150))
     current_price = Column(Numeric)
-    color = Column(String(50))
-    size = Column(String(50))
     is_active = Column(Boolean)
-    quantity = Column(Integer)
+    total_quantity = Column(Integer)

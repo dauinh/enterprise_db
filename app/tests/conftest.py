@@ -73,22 +73,16 @@ def seed(db_session):
     db_session.add_all(
         [
             Product(
-                id=0,
                 title="hello world",
                 current_price=2.5,
-                color="",
-                size="",
                 is_active=True,
-                quantity=15,
+                total_quantity=15,
             ),
             Product(
-                id=1,
                 title="toilet toy",
                 current_price=7.99,
-                color="",
-                size="",
                 is_active=True,
-                quantity=5,
+                total_quantity=5,
             ),
         ]
     )
