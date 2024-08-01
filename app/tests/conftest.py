@@ -8,7 +8,7 @@ from sqlalchemy.engine import URL
 from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
-from api.db import Base
+from app.api.db import Base
 from app.api.models.product import Product
 
 load_dotenv()
@@ -49,23 +49,33 @@ def drop_create_test_db():
                 )
 
             conn.execute(text(f"CREATE DATABASE {TEST_DB_NAME}"))
+            print(f'{TEST_DB_NAME} created!')
     except Exception as e:
         print(f"Some other error", e)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def db_session():
-    engine = create_engine(url)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def engine():
+    engine = create_engine(url, echo=True)
+    yield engine
+    engine.dispose()
+    drop_create_test_db()
 
+
+@pytest.fixture(scope='session')
+def tables(engine):
     Base.metadata.create_all(bind=engine)
-    db_session = SessionLocal()
+    yield
+    Base.metadata.drop_all(bind=engine)
 
-    print(f"{TEST_DB_NAME} is ready")
+
+@pytest.fixture(scope="session", autouse=True)
+def db_session(engine, tables):
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db_session = SessionLocal()
     yield db_session
     db_session.rollback()
     db_session.close()
-    drop_create_test_db()
 
 
 @pytest.fixture(scope="session")

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Numeric
 import uuid
 
-from api.db import Base
+from app.api.db import Base
 
 
 class Product(Base):
