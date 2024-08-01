@@ -36,7 +36,7 @@ def get_by_id(product_id: int, db: Session = Depends(get_db)):
     if not product:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     return product.__dict__
-    
+
 
 @app.get("/products/")
 def get_by_title(title: str, db: Session = Depends(get_db)):
@@ -55,18 +55,34 @@ def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
         yield p.__dict__
 
 
-@app.post("/products/", response_model=None)
-async def create(title: str = Body(...), current_price: float = Body(...), total_quantity : int = Body(...), db: Session = Depends(get_db)):
+@app.post("/products/")
+async def create(
+    title: str = Body(...),
+    current_price: float = Body(...),
+    total_quantity: int = Body(...),
+    db: Session = Depends(get_db),
+):
+    # Input validation
+    if not title:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Empty title")
+
     try:
         ProductRepo.get_by_title(db, title)
     except NoResultFound:
-        await ProductRepo.create(db, Product(
-            title=title,
-            current_price=current_price,
-            is_active=True,
-            total_quantity=total_quantity,
-        ))
+        await ProductRepo.create(
+            db,
+            Product(
+                title=title,
+                current_price=current_price,
+                is_active=True,
+                total_quantity=total_quantity,
+            ),
+        )
         return Response(status_code=status.HTTP_201_CREATED)
     else:
-        print('Product exists!')
-        return Response(status_code=status.HTTP_409_CONFLICT)
+        return Response(status_code=status.HTTP_409_CONFLICT, content="Product exists!")
+
+
+@app.put("/products/{product_id}")
+async def get_by_id(product_id: int, db: Session = Depends(get_db)):
+    pass

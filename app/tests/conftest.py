@@ -49,7 +49,7 @@ def drop_create_test_db():
                 )
 
             conn.execute(text(f"CREATE DATABASE {TEST_DB_NAME}"))
-            print(f'{TEST_DB_NAME} created!')
+            print(f"{TEST_DB_NAME} created!")
     except Exception as e:
         print(f"Some other error", e)
 
@@ -62,7 +62,7 @@ def engine():
     drop_create_test_db()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def tables(engine):
     Base.metadata.create_all(bind=engine)
     yield

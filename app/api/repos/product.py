@@ -29,6 +29,7 @@ async def create(db: Session, product: Product):
     db.add(product)
     db.commit()
 
+
 async def update_by_id(db: Session, product: Product):
     stmt = (
         update(Product)
