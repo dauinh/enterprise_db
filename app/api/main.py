@@ -25,9 +25,18 @@ def root():
     return {"message": "Hello World"}
 
 
-@app.get("/total")
+@app.get("products/total")
 def get_total(db: Session = Depends(get_db)) -> int:
     return ProductRepo.get_total(db)
+
+
+@app.get("/products/all/")
+def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
+    all_products = ProductRepo.get_all(db, skip, limit)
+    if not all_products:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    for p in all_products:
+        yield p.__dict__
 
 
 @app.get("/products/{product_id}")
@@ -44,15 +53,6 @@ def get_by_title(title: str, db: Session = Depends(get_db)):
     if not product:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
     return product.__dict__
-
-
-@app.get("/products/all/")
-def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
-    all_products = ProductRepo.get_all(db, skip, limit)
-    if not all_products:
-        return Response(status_code=status.HTTP_404_NOT_FOUND)
-    for p in all_products:
-        yield p.__dict__
 
 
 @app.post("/products/")
