@@ -84,5 +84,39 @@ async def create(
 
 
 @app.put("/products/{product_id}")
-async def get_by_id(product_id: int, db: Session = Depends(get_db)):
-    pass
+async def update_by_id(
+    product_id: int,
+    title: str = Body(...),
+    current_price: float = Body(...),
+    is_active: bool = Body(...),
+    total_quantity: int = Body(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        ProductRepo.get_by_id(db, product_id)
+    except NoResultFound:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Product not found")
+    else:
+        await ProductRepo.update_by_id(db, Product(
+                id=product_id,
+                title=title,
+                current_price=current_price,
+                is_active=is_active,
+                total_quantity=total_quantity,
+        ))
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    
+
+@app.delete("/products/{product_id}")
+async def delete_by_id(
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    product = None
+    try:
+        product = ProductRepo.get_by_id(db, product_id)
+    except NoResultFound:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Product not found")
+    else:
+        await ProductRepo.delete_by_id(db, product)
+        return Response(status_code=status.HTTP_202_ACCEPTED)

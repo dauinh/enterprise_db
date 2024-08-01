@@ -31,27 +31,16 @@ async def create(db: Session, product: Product):
 
 
 async def update_by_id(db: Session, product: Product):
-    stmt = (
-        update(Product)
-        .where(Product.id == product.id)
-        .values(
-            title=product.title,
-            current_price=product.current_price,
-            is_active=product.is_active,
-            total_quantity=product.total_quantity,
-        )
-    )
-    try:
-        db.scalars(stmt)
-        db.commit()
-    except ResourceClosedError:
-        print("Result object closed automatically")
+    db.merge(product)
+    db.commit()
 
 
-async def delete_by_id(db: Session, id: int):
-    stmt = delete(Product).where(Product.id == id)
-    try:
-        db.scalars(stmt)
-        db.commit()
-    except ResourceClosedError:
-        print("Result object closed automatically")
+async def delete_by_id(db: Session, product: Product):
+    db.delete(product)
+    db.commit()
+    # stmt = delete(Product).where(Product.id == id)
+    # try:
+    #     db.scalars(stmt)
+    #     db.commit()
+    # except ResourceClosedError:
+    #     print("Result object closed automatically")
