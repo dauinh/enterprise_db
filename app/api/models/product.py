@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, Numeric
 import uuid
+
+from sqlalchemy import Column, Integer, String, Boolean, Numeric
 
 from app.api.db import Base
 
