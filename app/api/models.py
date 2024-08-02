@@ -21,6 +21,7 @@ product_attribute = Table(
     Base.metadata,
     Column("product_id", Integer, ForeignKey("product.id")),
     Column("attribute_id", Integer, ForeignKey("attribute.id")),
+    # Column("quantity", Integer)
 )
 
 
@@ -58,6 +59,6 @@ class Attribute(Base):
     id = Column(
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
-    products = relationship("Product", secondary=product_attribute, back_populates="attributes")
     color = Column(String(50))
     size = Column(String(50))
+    products = relationship("Product", secondary=product_attribute, back_populates="attributes")
