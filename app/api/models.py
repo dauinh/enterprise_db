@@ -1,19 +1,23 @@
 import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, Numeric
+from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.api.db import Base
+
+
+# Relationship table between Product and Collection
+belongs = Table(
+    "belongs",
+    Base.metadata,
+    Column("product_id", Integer, ForeignKey("product.id"), primary_key=True),
+    Column("collection_id", Integer, ForeignKey("collection.id"), primary_key=True),
+)
 
 
 class Product(Base):
     __tablename__ = "product"
 
-    # _uid = Column(
-    #     String(36),
-    #     nullable=False,
-    #     unique=True,
-    #     default=lambda: str(uuid.uuid4()),
-    # )
     id = Column(
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
@@ -21,6 +25,11 @@ class Product(Base):
     current_price = Column(Numeric)
     is_active = Column(Boolean)
     total_quantity = Column(Integer)
+    collections = relationship(
+        "Collection",
+        secondary=belongs,
+        back_populates="products"
+    )
 
 
 class Collection(Base):
@@ -30,3 +39,9 @@ class Collection(Base):
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
     name = Column(String(150))
+    products = relationship(
+        "Product",
+        secondary=belongs, 
+        back_populates="collections"
+    )
+
