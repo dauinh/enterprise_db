@@ -80,26 +80,32 @@ def db_session(engine, tables):
 
 @pytest.fixture(scope="session")
 def seed(db_session):
-    db_session.add_all(
-        [
-            Product(
+    # define sample data items
+    product1 = Product(
                 title="hello world",
                 current_price=2.5,
                 is_active=True,
                 total_quantity=15,
-            ),
-            Product(
+            )
+    product2 = Product(
                 title="toilet toy",
                 current_price=7.99,
                 is_active=True,
                 total_quantity=5,
-            ),
-            Collection(
-                name="anniversary-best-sellers"
-            ),
-            Collection(
-                name="everyday-tableware"
             )
-        ]
+    collection1 = Collection(name="everyday-tableware")
+    collection2 = Collection(name="anniversary-best-sellers")
+    db_session.add_all(
+        [product1, product2, collection1, collection2]
     )
+
+    # add relationships
+    product1.collections.append(collection1)
+    product1.collections.append(collection2)
+    product2.collections.append(collection2)
+
+    collection1.products.append(product1)
+    collection2.products.append(product2)
+    collection2.products.append(product1)
+
     db_session.commit()

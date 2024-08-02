@@ -10,8 +10,8 @@ from app.api.db import Base
 belongs = Table(
     "belongs",
     Base.metadata,
-    Column("product_id", Integer, ForeignKey("product.id"), primary_key=True),
-    Column("collection_id", Integer, ForeignKey("collection.id"), primary_key=True),
+    Column("product_id", Integer, ForeignKey("product.id")),
+    Column("collection_id", Integer, ForeignKey("collection.id")),
 )
 
 
