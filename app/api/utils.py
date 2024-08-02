@@ -3,7 +3,7 @@ import csv
 
 from sqlalchemy.orm import sessionmaker
 
-from .models.product import Product
+from .models import Product
 from .db import engine, SessionLocal, Base
 
 

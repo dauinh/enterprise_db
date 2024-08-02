@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models.product import Product
+from app.api.models import Product, Collection
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -94,6 +94,12 @@ def seed(db_session):
                 is_active=True,
                 total_quantity=5,
             ),
+            Collection(
+                name="anniversary-best-sellers"
+            ),
+            Collection(
+                name="everyday-tableware"
+            )
         ]
     )
     db_session.commit()

@@ -4,7 +4,7 @@ from sqlalchemy.exc import NoResultFound
 
 from app.api.db import engine, SessionLocal, Base
 from app.api.repos import product as ProductRepo
-from app.api.models.product import Product
+from app.api.models import Product
 
 Base.metadata.create_all(bind=engine)
 

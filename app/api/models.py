@@ -21,3 +21,12 @@ class Product(Base):
     current_price = Column(Numeric)
     is_active = Column(Boolean)
     total_quantity = Column(Integer)
+
+
+class Collection(Base):
+    __tablename__ = "collection"
+
+    id = Column(
+        Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
+    )
+    name = Column(String(150))
