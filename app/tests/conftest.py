@@ -82,22 +82,20 @@ def db_session(engine, tables):
 def seed(db_session):
     # define sample data items
     product1 = Product(
-                title="hello world",
-                current_price=2.5,
-                is_active=True,
-                total_quantity=15,
-            )
+        title="hello world",
+        current_price=2.5,
+        is_active=True,
+        total_quantity=15,
+    )
     product2 = Product(
-                title="toilet toy",
-                current_price=7.99,
-                is_active=True,
-                total_quantity=5,
-            )
+        title="toilet toy",
+        current_price=7.99,
+        is_active=True,
+        total_quantity=5,
+    )
     collection1 = Collection(name="everyday-tableware")
     collection2 = Collection(name="anniversary-best-sellers")
-    db_session.add_all(
-        [product1, product2, collection1, collection2]
-    )
+    db_session.add_all([product1, product2, collection1, collection2])
 
     # add relationships
     product1.collections.append(collection1)

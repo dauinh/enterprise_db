@@ -26,9 +26,7 @@ class Product(Base):
     is_active = Column(Boolean)
     total_quantity = Column(Integer)
     collections = relationship(
-        "Collection",
-        secondary=belongs,
-        back_populates="products"
+        "Collection", secondary=belongs, back_populates="products"
     )
 
 
@@ -39,9 +37,4 @@ class Collection(Base):
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
     name = Column(String(150))
-    products = relationship(
-        "Product",
-        secondary=belongs, 
-        back_populates="collections"
-    )
-
+    products = relationship("Product", secondary=belongs, back_populates="collections")
