@@ -10,5 +10,5 @@ def get_all(db: Session, skip: int = 0, limit: int = 162) -> list[Collection]:
 
 
 def get_all_products_from_collection(db: Session, collection_id: int) -> list[Product]:
-    collection = db.query(Collection).get(collection_id)
+    collection = db.get(Collection, collection_id)
     return collection.products
