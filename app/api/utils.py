@@ -1,6 +1,7 @@
 import sys
 import csv
 
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import engine, SessionLocal, Base
@@ -72,8 +73,36 @@ def insert_collections(Session: sessionmaker) -> None:
                 session.rollback()
 
 
+def insert_belongs(Session: sessionmaker) -> None:
+    file_path = sys.path[0] + "/../data/belongs.csv"
+    data = []
+    with open(file_path, "r") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            row['product_id'] = int(row['product_id']) + 1
+            data.append(row)
+
+    with Session as session:
+        for i, row in enumerate(data):
+            if i < 1: continue
+            stmt = select(Collection).where(Collection.name == row['collection'])
+            collection = session.scalars(stmt).one()
+            # print(row['collection'], collection.id)
+            stmt = select(Product).where(Product.id == row['product_id'])
+            product = session.scalars(stmt).one()
+            product.collections.append(collection)
+            session.add(collection)
+            try:
+                session.commit()
+            except Exception as e:
+                print(e)
+                print("Cannot insert", row)
+                session.rollback()
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     # insert_products(db)
     # insert_collections(db)
+    insert_belongs(db)
