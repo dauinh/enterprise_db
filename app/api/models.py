@@ -21,6 +21,7 @@ class ProductAttribute(Base):
     product_id_id = Column(ForeignKey("product.id"), primary_key=True)
     attribute_id = Column(ForeignKey("attribute.id"), primary_key=True)
     quantity = Column(Integer)
+    is_active = Column(Boolean)
     products = relationship("Product", back_populates="attributes")
     attributes = relationship("Attribute", back_populates="products")
 
