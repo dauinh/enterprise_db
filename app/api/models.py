@@ -48,7 +48,9 @@ class Collection(Base):
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
     name = Column(String(150))
-    products = relationship("Product", secondary=product_collection, back_populates="collections")
+    products = relationship(
+        "Product", secondary=product_collection, back_populates="collections"
+    )
 
 
 class Attribute(Base):
