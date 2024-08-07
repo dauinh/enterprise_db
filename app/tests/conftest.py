@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models import Product, Collection, Attribute
+from app.api.models import Product, Collection, Attribute, ProductAttribute
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -95,18 +95,22 @@ def seed(db_session):
     )
     collection1 = Collection(name="everyday-tableware")
     collection2 = Collection(name="anniversary-best-sellers")
-    attribute1 = Attribute(color='pink', size='medium')
-    attribute2 = Attribute(color='white', size='')
 
-    db_session.add_all([product1, product2, collection1, collection2, attribute1, attribute2])
+    product1_a1 = ProductAttribute(quantity=5)
+    product2_a1 = ProductAttribute(quantity=5)
+
+    product1_a1.attributes = Attribute(color='pink', size='medium')
+    product2_a1.attributes = Attribute(color='white', size='')
+
+    product1.attributes.append(product1_a1)
+    product2.attributes.append(product2_a1)
+
+    db_session.add_all([product1, product2, collection1, collection2])
 
     # add relationships
     product1.collections.append(collection1)
     product1.collections.append(collection2)
-    product1.attributes.append(attribute1)
-
     product2.collections.append(collection2)
-    product2.attributes.append(attribute2)
 
     collection1.products.append(product1)
     collection2.products.append(product2)

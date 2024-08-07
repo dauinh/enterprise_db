@@ -16,13 +16,13 @@ product_collection = Table(
 
 
 # Relationship table between Product and Attribute
-product_attribute = Table(
-    "product_attribute",
-    Base.metadata,
-    Column("product_id", Integer, ForeignKey("product.id")),
-    Column("attribute_id", Integer, ForeignKey("attribute.id")),
-    # Column("quantity", Integer)
-)
+class ProductAttribute(Base):
+    __tablename__ = "product_attribute"
+    product_id_id = Column(ForeignKey("product.id"), primary_key=True)
+    attribute_id = Column(ForeignKey("attribute.id"), primary_key=True)
+    quantity = Column(Integer)
+    products = relationship("Product", back_populates="attributes")
+    attributes = relationship("Attribute", back_populates="products")
 
 
 class Product(Base):
@@ -38,9 +38,7 @@ class Product(Base):
     collections = relationship(
         "Collection", secondary=product_collection, back_populates="products"
     )
-    attributes = relationship(
-        "Attribute", secondary=product_attribute, back_populates="products"
-    )
+    attributes = relationship("ProductAttribute", back_populates="products")
 
 
 class Collection(Base):
@@ -61,4 +59,4 @@ class Attribute(Base):
     )
     color = Column(String(50))
     size = Column(String(50))
-    products = relationship("Product", secondary=product_attribute, back_populates="attributes")
+    products = relationship("ProductAttribute", back_populates="attributes")
