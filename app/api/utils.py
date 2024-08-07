@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import engine, SessionLocal, Base
-from app.api.models import Product, Collection
+from app.api.models import Product, Collection, Attribute
 
 
 def insert_products(Session: sessionmaker) -> None:
@@ -17,20 +17,10 @@ def insert_products(Session: sessionmaker) -> None:
             row['id'] = i + 1
             try:
                 row["current_price"] = (
-                    float(row["current_price"]) if row["current_price"] else 0.0
+                    float(row["current_price"]) if row["current_price"] else None
                 )
             except ValueError:
-                row["current_price"] = 0.0
-
-            # try:
-            #     row["color"] = row["color"] if row["color"] else ""
-            # except ValueError:
-            #     row["color"] = ""
-
-            # try:
-            #     row["size"] = row["size"] if row["size"] else ""
-            # except ValueError:
-            #     row["size"] = ""
+                row["current_price"] = None
 
             try:
                 row["is_active"] = bool(row["is_active"])
@@ -42,8 +32,7 @@ def insert_products(Session: sessionmaker) -> None:
     with Session as session:
         for i, row in enumerate(data):
             # if i < 12335: continue
-            product = Product(**row)
-            session.add(product)
+            session.add(Product(**row))
             try:
                 session.commit()
             except Exception as e:
@@ -63,8 +52,7 @@ def insert_collections(Session: sessionmaker) -> None:
 
     with Session as session:
         for i, row in enumerate(data):
-            collection = Collection(**row)
-            session.add(collection)
+            session.add(Collection(**row))
             try:
                 session.commit()
             except Exception as e:
@@ -100,9 +88,39 @@ def insert_belongs(Session: sessionmaker) -> None:
                 session.rollback()
 
 
+def insert_attrs(Session: sessionmaker) -> None:
+    file_path = sys.path[0] + "/../data/attribute.csv"
+    data = []
+    with open(file_path, "r") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            row['id'] = i + 1
+            try:
+                row["color"] = row["color"] if row["color"] else None
+            except ValueError:
+                row["color"] = None
+
+            try:
+                row["size"] = row["size"] if row["size"] else None
+            except ValueError:
+                row["size"] = None
+            data.append(row)
+
+    with Session as session:
+        for i, row in enumerate(data):
+            session.add(Attribute(**row))
+            try:
+                session.commit()
+            except Exception as e:
+                print(e)
+                print("Cannot insert", row)
+                session.rollback()
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     # insert_products(db)
     # insert_collections(db)
-    insert_belongs(db)
+    # insert_belongs(db)
+    # insert_attrs(db)
