@@ -1,8 +1,7 @@
-from sqlalchemy import func, select, update, delete, insert
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import ResourceClosedError
 
-from app.api.models.product import Product
+from app.api.models import Product
 
 
 def get_total(db: Session) -> int:

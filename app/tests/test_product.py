@@ -3,7 +3,7 @@ import asyncio
 
 from sqlalchemy import select
 
-from app.api.models.product import Product
+from app.api.models import Product
 from app.api.repos.product import (
     get_total,
     get_by_id,

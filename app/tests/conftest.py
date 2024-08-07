@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models.product import Product
+from app.api.models import Product, Collection, Attribute, ProductAttribute
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -80,20 +80,46 @@ def db_session(engine, tables):
 
 @pytest.fixture(scope="session")
 def seed(db_session):
-    db_session.add_all(
-        [
-            Product(
-                title="hello world",
-                current_price=2.5,
-                is_active=True,
-                total_quantity=15,
-            ),
-            Product(
-                title="toilet toy",
-                current_price=7.99,
-                is_active=True,
-                total_quantity=5,
-            ),
-        ]
+    # define sample data items
+    product1 = Product(
+        title="hello world",
+        current_price=2.5,
+        is_active=True,
+        total_quantity=15,
     )
+    product2 = Product(
+        title="toilet toy",
+        current_price=7.99,
+        is_active=True,
+        total_quantity=5,
+    )
+    collection1 = Collection(name="everyday-tableware")
+    collection2 = Collection(name="anniversary-best-sellers")
+
+    product1_a1 = ProductAttribute(quantity=5)
+    product1_a2 = ProductAttribute(quantity=5)
+    product1_a3 = ProductAttribute(quantity=5)
+    product2_a1 = ProductAttribute(quantity=5)
+
+    product1_a1.attributes = Attribute(color='pink', size='small')
+    product1_a2.attributes = Attribute(color='pink', size='medium')
+    product1_a3.attributes = Attribute(color='pink', size='large')
+    product2_a1.attributes = Attribute(color='white', size='')
+
+    product1.attributes.append(product1_a1)
+    product1.attributes.append(product1_a2)
+    product1.attributes.append(product1_a3)
+    product2.attributes.append(product2_a1)
+
+    db_session.add_all([product1, product2, collection1, collection2])
+
+    # add relationships
+    product1.collections.append(collection1)
+    product1.collections.append(collection2)
+    product2.collections.append(collection2)
+
+    collection1.products.append(product1)
+    collection2.products.append(product2)
+    collection2.products.append(product1)
+
     db_session.commit()
