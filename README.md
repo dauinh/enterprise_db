@@ -40,7 +40,7 @@ In `webscrape` directory, run `python -m pytest`
 - [x] Model `product` entity
 - [x] Implement APIs for fetching product data
 - [x] Model `collection` entity and relationship
-- [ ] Model `attribute` entity and relationship
+- [x] Model `attribute` entity and relationship
 - [ ] Implement APIs for collection and product attributes
 - [ ] Upload data
 - [ ] Implement customer/user interface and workflow
