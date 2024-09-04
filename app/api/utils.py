@@ -156,14 +156,14 @@ def insert_product_attr(Session: sessionmaker) -> None:
             stmt = select(Product).where(Product.id == row['product_id'])
             product = session.scalars(stmt).one()
 
-            # association.attributes = attr
-            # product.attributes.append(association)
-            # try:
-            #     session.commit()
-            # except Exception as e:
-            #     print(e)
-            #     print("Cannot insert", row)
-            #     session.rollback()
+            association.attributes = attr
+            product.attributes.append(association)
+            try:
+                session.commit()
+            except Exception as e:
+                print(e)
+                print("Cannot insert", row)
+                session.rollback()
 
 
 if __name__ == "__main__":
