@@ -33,7 +33,7 @@ def get_total(db: Session = Depends(get_db)) -> int:
 
 
 @app.get("/products/all/")
-def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
+def get_all(skip: int = 0, limit: int = 1561, db: Session = Depends(get_db)):
     all_products = ProductRepo.get_all(db, skip, limit)
     if not all_products:
         return Response(status_code=status.HTTP_404_NOT_FOUND)

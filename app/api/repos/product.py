@@ -19,7 +19,7 @@ def get_by_title(db: Session, title: str) -> Product:
     return db.scalars(stmt).one()
 
 
-def get_all(db: Session, skip: int = 0, limit: int = 12342) -> list[Product]:
+def get_all(db: Session, skip: int = 0, limit: int = 1561) -> list[Product]:
     stmt = select(Product).limit(limit).offset(skip)
     return db.scalars(stmt).all()
 
