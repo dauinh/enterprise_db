@@ -1,6 +1,6 @@
-# Muji Database Project
+# Enterprise Database Project
 
-## Muji Crawler
+## Enterprise Crawler
 
 #### 1. Get collections
 - [x] Get collections links
@@ -35,7 +35,7 @@ In `webscrape` directory, run `python -m pytest`
 - [x] Check overlapping products
 - [x] Add quantity
 
-## Muji DB
+## Enterprise DB
 - [x] Set up FastAPI and SQLalchemy
 - [x] Model `product` entity
 - [x] Implement APIs for fetching product data
