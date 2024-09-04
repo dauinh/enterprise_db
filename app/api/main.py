@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 
 from app.api.db import engine, SessionLocal, Base
+from app.api.models import Product, Collection
 from app.api.repos import product as ProductRepo
-from app.api.models import Product
+from app.api.repos import collection as CollectionRepo
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,7 +27,7 @@ def root():
     return {"message": "Hello World"}
 
 
-@app.get("products/total")
+@app.get("/products/total")
 def get_total(db: Session = Depends(get_db)) -> int:
     return ProductRepo.get_total(db)
 
@@ -124,3 +126,21 @@ async def delete_by_id(product_id: int, db: Session = Depends(get_db)):
     else:
         await ProductRepo.delete_by_id(db, product)
         return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+# TODO: testing
+@app.get("/collections/all/")
+def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
+    collections = CollectionRepo.get_all(db, skip, limit)
+    if not collections:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    for c in collections:
+        yield c.__dict__
+
+
+@app.get("/collections/{collection_id}")
+def get_by_id(collection_id: int, db: Session = Depends(get_db)):
+    products = ProductRepo.get_all_products_from_collection(db, collection_id)
+    if not products:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    return products.__dict__

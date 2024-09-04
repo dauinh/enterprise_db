@@ -101,10 +101,10 @@ def seed(db_session):
     product1_a3 = ProductAttribute(quantity=5)
     product2_a1 = ProductAttribute(quantity=5)
 
-    product1_a1.attributes = Attribute(color='pink', size='small')
-    product1_a2.attributes = Attribute(color='pink', size='medium')
-    product1_a3.attributes = Attribute(color='pink', size='large')
-    product2_a1.attributes = Attribute(color='white', size='')
+    product1_a1.attributes = Attribute(color="pink", size="small")
+    product1_a2.attributes = Attribute(color="pink", size="medium")
+    product1_a3.attributes = Attribute(color="pink", size="large")
+    product2_a1.attributes = Attribute(color="white", size="")
 
     product1.attributes.append(product1_a1)
     product1.attributes.append(product1_a2)
