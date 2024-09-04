@@ -15,7 +15,7 @@ def collection_urls_file(tmp_path_factory):
         "https://www.muji.us/collections/new-arrivals",
         "https://www.muji.us/collections/unisex",
         "https://www.muji.us/collections/stationery",
-        "https://www.muji.us/collections/home"
+        "https://www.muji.us/collections/home",
     ]
     temp_dir = tmp_path_factory.mktemp("data")
     temp_file = temp_dir / "collection.csv"

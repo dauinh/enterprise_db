@@ -14,7 +14,7 @@ def insert_products(Session: sessionmaker) -> None:
     with open(file_path, "r") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
-            row['id'] = i + 1
+            row["id"] = i + 1
             try:
                 row["current_price"] = (
                     float(row["current_price"]) if row["current_price"] else None
@@ -46,7 +46,7 @@ def insert_collections(Session: sessionmaker) -> None:
     with open(file_path, "r") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
-            row['id'] = i + 1
+            row["id"] = i + 1
             data.append(row)
 
     with Session as session:
@@ -66,16 +66,16 @@ def insert_belongs(Session: sessionmaker) -> None:
     with open(file_path, "r") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
-            row['product_id'] = int(row['product_id']) + 1
+            row["product_id"] = int(row["product_id"]) + 1
             data.append(row)
 
     with Session as session:
         for i, row in enumerate(data):
             # if i < 1: continue
-            stmt = select(Collection).where(Collection.name == row['collection'])
+            stmt = select(Collection).where(Collection.name == row["collection"])
             collection = session.scalars(stmt).one()
             # print(row['collection'], collection.id)
-            stmt = select(Product).where(Product.id == row['product_id'])
+            stmt = select(Product).where(Product.id == row["product_id"])
             product = session.scalars(stmt).one()
             product.collections.append(collection)
             session.add(collection)
@@ -93,7 +93,7 @@ def insert_attr(Session: sessionmaker) -> None:
     with open(file_path, "r") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
-            row['id'] = i + 1
+            row["id"] = i + 1
             try:
                 row["color"] = row["color"] if row["color"] else None
             except ValueError:
@@ -122,7 +122,7 @@ def insert_product_attr(Session: sessionmaker) -> None:
     with open(file_path, "r") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
-            row['product_id'] = int(row['product_id']) + 1
+            row["product_id"] = int(row["product_id"]) + 1
             try:
                 row["color"] = row["color"] if row["color"] else None
             except ValueError:
@@ -142,18 +142,16 @@ def insert_product_attr(Session: sessionmaker) -> None:
             # if i < 7885: continue
             # if i > 7886: break
             association = ProductAttribute(
-                is_active=row['is_active'],
-                quantity=row['quantity']
+                is_active=row["is_active"], quantity=row["quantity"]
             )
             stmt = select(Attribute).where(
-                Attribute.color == row['color'],
-                Attribute.size == row['size']
+                Attribute.color == row["color"], Attribute.size == row["size"]
             )
             try:
                 attr = session.scalars(stmt).one()
             except:
                 print(row, attr.color, attr.size)
-            stmt = select(Product).where(Product.id == row['product_id'])
+            stmt = select(Product).where(Product.id == row["product_id"])
             product = session.scalars(stmt).one()
 
             association.attributes = attr
