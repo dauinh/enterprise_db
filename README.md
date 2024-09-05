@@ -43,7 +43,7 @@ In `webscrape` directory, run `python -m pytest`
 - [x] Model `attribute` entity and relationship
 - [ ] Implement APIs for collection and product attributes
 - [x] Upload local data
-- [ ] Implement customer/user interface and workflow
+- [ ] Implement customer/user interface and workflow (https://github.com/minimal-ui-kit/material-kit-react)
 - [ ] Implement transaction APIs
 - [ ] Generate data for store
 - [ ] Use Selenium to generate user
