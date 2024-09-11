@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Body, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 
@@ -12,6 +13,18 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:3039",
+    "http://localhost:3039/*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dependency
 def get_db():
@@ -33,7 +46,7 @@ def get_total(db: Session = Depends(get_db)) -> int:
 
 
 @app.get("/products/all/")
-def get_all(skip: int = 0, limit: int = 12342, db: Session = Depends(get_db)):
+def get_all(skip: int = 0, limit: int = 1561, db: Session = Depends(get_db)):
     all_products = ProductRepo.get_all(db, skip, limit)
     if not all_products:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
