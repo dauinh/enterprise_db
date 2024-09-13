@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models import Product, Collection, Attribute, ProductAttribute
+from app.api.models import Product, Collection, Attribute, ProductAttribute, User, Gender, Location, Transaction, Status
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -80,16 +80,16 @@ def db_session(engine, tables):
 
 @pytest.fixture(scope="session")
 def seed(db_session):
-    # define sample data items
+    # define sample product items
     product1 = Product(
         title="hello world",
-        current_price=2.5,
+        cost=2.5,
         is_active=True,
         total_quantity=15,
     )
     product2 = Product(
         title="toilet toy",
-        current_price=7.99,
+        cost=7.99,
         is_active=True,
         total_quantity=5,
     )
@@ -123,3 +123,25 @@ def seed(db_session):
     collection2.products.append(product1)
 
     db_session.commit()
+
+    # define sample user and transaction items
+    user1 = User(
+        birth_year=1995,
+        gender=Gender.female,
+        location=Location.Boston
+    )
+    user2 = User(
+        birth_year=2002,
+        gender=Gender.male,
+        location=Location.New_York
+    )
+
+    transaction1 = Transaction(
+        user_id=user1.id,
+        product_id=product1.id,
+        quantity=2,
+        price=product1.price * 2,
+        status=Status.complete
+    )
+
+    db_session.add_all([user1, user2, transaction1])

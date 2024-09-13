@@ -1,11 +1,11 @@
-import sys
-import csv
+import sys, csv
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import engine, SessionLocal, Base
-from app.api.models import Product, Collection, Attribute, ProductAttribute
+from app.api.models import Product, Collection, Attribute, ProductAttribute, User, Gender, Location
 
 
 def insert_products(Session: sessionmaker) -> None:
@@ -16,11 +16,11 @@ def insert_products(Session: sessionmaker) -> None:
         for i, row in enumerate(reader):
             row["id"] = i + 1
             try:
-                row["current_price"] = (
-                    float(row["current_price"]) if row["current_price"] else None
+                row["cost"] = (
+                    float(row["cost"]) if row["cost"] else None
                 )
             except ValueError:
-                row["current_price"] = None
+                row["cost"] = None
             try:
                 row["is_active"] = bool(row["is_active"])
             except ValueError:
@@ -164,6 +164,40 @@ def insert_product_attr(Session: sessionmaker) -> None:
                 session.rollback()
 
 
+def insert_user(Session: sessionmaker) -> None:
+    file_path = sys.path[0] + "/../data/user.csv"
+    data = []
+    with open(file_path, "r") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            # if i > 5: break
+            new_row = {
+                'id': row['user_id'],
+                'birth_year': datetime.now().year - int(row['age']),
+                'gender': Gender.female if row['gender'] == "['Female']" else Gender.male
+            }
+
+            if row['location'] == "['New York']":
+                new_row['location'] = Location.New_York
+            elif row['location'] == "['Boston']":
+                new_row['location'] = Location.Boston
+            elif row['location'] == "['Portland']":
+                new_row['location'] = Location.Portland
+
+            data.append(new_row)
+
+    with Session as session:
+        for i, row in enumerate(data):
+            session.add(User(**row))
+            try:
+                session.commit()
+            except Exception as e:
+                print(e)
+                print("Cannot insert", row["title"])
+                session.rollback()
+
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -171,4 +205,5 @@ if __name__ == "__main__":
     # insert_collections(db)
     # insert_belongs(db)
     # insert_attr(db)
-    insert_product_attr(db)
+    # insert_product_attr(db)
+    insert_user(db)

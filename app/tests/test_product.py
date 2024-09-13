@@ -43,7 +43,7 @@ async def test_create(db_session, seed):
         db_session,
         Product(
             title="elephant plushie",
-            current_price=14.99,
+            cost=14.99,
             is_active=True,
             total_quantity=20,
         ),
@@ -63,7 +63,7 @@ async def test_update_by_id(db_session, seed):
         Product(
             id=1,
             title="elephant plushie",
-            current_price=14.99,
+            cost=14.99,
             is_active=True,
             total_quantity=20,
         ),
