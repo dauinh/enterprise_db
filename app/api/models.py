@@ -1,7 +1,7 @@
 import uuid, enum
 from datetime import datetime, UTC
 
-from sqlalchemy import DateTime, Table, ForeignKey, Column, Integer, String, Boolean, Numeric, Enum
+from sqlalchemy import DateTime, Table, ForeignKey, Column, Integer, String, Boolean, Float, Enum
 from sqlalchemy.orm import relationship
 
 from app.api.db import Base
@@ -30,18 +30,19 @@ product_collection = Table(
     Column("collection_id", Integer, ForeignKey("collection.id")),
 )
 
-# Relationship table between ProductAttribute and Transaction
+# Relationship table between Product and Transaction
 class Sales(Base):
     __tablename__ = "sales"
 
     transaction_id = Column(ForeignKey("transaction.id"), primary_key=True)
-    product_attribute_id = Column(ForeignKey("product_attribute.id"), primary_key=True)
+    product_id = Column(ForeignKey("product.id"), primary_key=True)
+    product_attribute_id = Column(ForeignKey("product_attribute.id"), nullable=True)
 
     quantity = Column(Integer, nullable=False)
-    price = Column(Numeric(precision=2), nullable=False)
+    price = Column(Float(decimal_return_scale=2), nullable=False)
 
-    product_attributes = relationship("ProductAttribute", back_populates="transactions")
-    transactions = relationship("Transaction", back_populates="product_attributes")
+    products = relationship("Product", back_populates="transactions")
+    transactions = relationship("Transaction", back_populates="products")
 
 
 class Product(Base):
@@ -51,15 +52,15 @@ class Product(Base):
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
     title = Column(String(150))
-    cost = Column(Numeric(precision=2))
+    cost = Column(Float(decimal_return_scale=2))
     is_active = Column(Boolean)
     total_quantity = Column(Integer)
 
     collections = relationship(
         "Collection", secondary=product_collection, back_populates="products"
     )
-    attributes = relationship("ProductAttribute", back_populates="products")
-    # transactions = relationship("Transaction", back_populates="products")
+    attributes = relationship("ProductAttribute", backref="products")
+    transactions = relationship("Sales", back_populates="products")
 
 
 class Collection(Base):
@@ -85,7 +86,7 @@ class ProductAttribute(Base):
     color = Column(String(50))
     size = Column(String(50))
     
-    cost = Column(Numeric(precision=2))
+    cost = Column(Float(decimal_return_scale=2))
     quantity = Column(Integer)
     is_active = Column(Boolean)
 
@@ -100,7 +101,7 @@ class User(Base):
     gender = Column(Enum(Gender))
     location = Column(Enum(Location))
 
-    transactions = relationship("Transaction", back_populates="users")
+    transactions = relationship("Transaction", backref="users")
 
 
 class Transaction(Base):
@@ -109,6 +110,9 @@ class Transaction(Base):
     id = Column(
         Integer, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
+    product_id = Column(ForeignKey("product.id"))
     user_id = Column(ForeignKey("user.id"), nullable=False)
     status = Column(Enum(Status))
     timestamp = Column(DateTime, default=datetime.now(UTC))
+
+    products = relationship("Sales", back_populates="transactions")

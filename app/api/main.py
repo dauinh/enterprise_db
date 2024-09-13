@@ -114,7 +114,7 @@ async def update_by_id(
             status_code=status.HTTP_400_BAD_REQUEST, content="Product not found"
         )
     else:
-        await ProductRepo.update_by_id(
+        await ProductRepo.update(
             db,
             Product(
                 id=product_id,
@@ -137,7 +137,7 @@ async def delete_by_id(product_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST, content="Product not found"
         )
     else:
-        await ProductRepo.delete_by_id(db, product)
+        await ProductRepo.delete(db, product)
         return Response(status_code=status.HTTP_202_ACCEPTED)
 
 

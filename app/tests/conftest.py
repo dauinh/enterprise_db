@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models import Product, Collection, Attribute, ProductAttribute, User, Gender, Location, Transaction, Status
+from app.api.models import Product, Collection, ProductAttribute, User, Gender, Location, Transaction, Status
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -82,45 +82,40 @@ def db_session(engine, tables):
 def seed(db_session):
     # define sample product items
     product1 = Product(
-        title="hello world",
+        title="elephant spoon",
         cost=2.5,
         is_active=True,
         total_quantity=15,
+        attributes=[
+            ProductAttribute(quantity=5, color="pink", size="small"),
+            ProductAttribute(quantity=5, color="pink", size="medium"),
+            ProductAttribute(quantity=5, color="pink", size="large")
+        ]
     )
     product2 = Product(
         title="toilet toy",
         cost=7.99,
         is_active=True,
         total_quantity=5,
+        attributes=[
+            ProductAttribute(quantity=5, color="white", size="")
+        ]
     )
     collection1 = Collection(name="everyday-tableware")
     collection2 = Collection(name="anniversary-best-sellers")
 
-    product1_a1 = ProductAttribute(quantity=5)
-    product1_a2 = ProductAttribute(quantity=5)
-    product1_a3 = ProductAttribute(quantity=5)
-    product2_a1 = ProductAttribute(quantity=5)
-
-    product1_a1.attributes = Attribute(color="pink", size="small")
-    product1_a2.attributes = Attribute(color="pink", size="medium")
-    product1_a3.attributes = Attribute(color="pink", size="large")
-    product2_a1.attributes = Attribute(color="white", size="")
-
-    product1.attributes.append(product1_a1)
-    product1.attributes.append(product1_a2)
-    product1.attributes.append(product1_a3)
-    product2.attributes.append(product2_a1)
-
     db_session.add_all([product1, product2, collection1, collection2])
 
     # add relationships
+    # collection1: product1
+    # collection2: product1, product2
     product1.collections.append(collection1)
     product1.collections.append(collection2)
     product2.collections.append(collection2)
 
-    collection1.products.append(product1)
-    collection2.products.append(product2)
-    collection2.products.append(product1)
+    # collection1.products.append(product1)
+    # collection2.products.append(product2)
+    # collection2.products.append(product1)
 
     db_session.commit()
 
@@ -136,12 +131,12 @@ def seed(db_session):
         location=Location.New_York
     )
 
-    transaction1 = Transaction(
-        user_id=user1.id,
-        product_id=product1.id,
-        quantity=2,
-        price=product1.price * 2,
-        status=Status.complete
-    )
+    # transaction1 = Transaction(
+    #     user_id=user1.id,
+    #     product_id=product1.id,
+    #     quantity=2,
+    #     price=product1.price * 2,
+    #     status=Status.complete
+    # )
 
-    db_session.add_all([user1, user2, transaction1])
+    # db_session.add_all([user1, user2, transaction1])

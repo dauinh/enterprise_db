@@ -29,11 +29,21 @@ async def create(db: Session, product: Product):
     db.commit()
 
 
-async def update_by_id(db: Session, product: Product):
+async def update(db: Session, product: Product):
     db.merge(product)
     db.commit()
 
 
-async def delete_by_id(db: Session, product: Product):
+async def delete(db: Session, product: Product):
     db.delete(product)
     db.commit()
+
+
+def is_attr_quantities_equal_total(db: Session, product_id: int) -> bool:
+    stmt = select(Product).where(Product.id == product_id)
+    product = db.scalars(stmt).one()
+    total = product.total_quantity
+    count = 0
+    for attr in product.attributes:
+        count += attr.quantity
+    return total == count
