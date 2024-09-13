@@ -104,8 +104,6 @@ def seed(db_session):
     collection1 = Collection(name="everyday-tableware")
     collection2 = Collection(name="anniversary-best-sellers")
 
-    db_session.add_all([product1, product2, collection1, collection2])
-
     # add relationships
     # collection1: product1
     # collection2: product1, product2
@@ -113,10 +111,7 @@ def seed(db_session):
     product1.collections.append(collection2)
     product2.collections.append(collection2)
 
-    # collection1.products.append(product1)
-    # collection2.products.append(product2)
-    # collection2.products.append(product1)
-
+    db_session.add_all([product1, product2, collection1, collection2])
     db_session.commit()
 
     # define sample user and transaction items
@@ -139,4 +134,5 @@ def seed(db_session):
     #     status=Status.complete
     # )
 
-    # db_session.add_all([user1, user2, transaction1])
+    db_session.add_all([user1, user2])
+    db_session.commit()
