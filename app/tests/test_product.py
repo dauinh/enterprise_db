@@ -12,7 +12,7 @@ from app.api.repos.product import (
     create,
     update,
     delete,
-    is_attr_quantities_equal_total
+    is_attr_quantities_equal_total,
 )
 
 pytest_plugins = ("pytest_asyncio",)
@@ -104,4 +104,3 @@ async def test_delete(db_session, seed):
     product = db_session.scalars(stmt).one()
     await delete(db_session, product)
     assert get_total(db_session) == 2
-

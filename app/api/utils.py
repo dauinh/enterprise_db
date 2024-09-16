@@ -5,7 +5,15 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import engine, SessionLocal, Base
-from app.api.models import Product, Collection, Attribute, ProductAttribute, User, Gender, Location
+from app.api.models import (
+    Product,
+    Collection,
+    Attribute,
+    ProductAttribute,
+    User,
+    Gender,
+    Location,
+)
 
 
 def insert_products(Session: sessionmaker) -> None:
@@ -16,9 +24,7 @@ def insert_products(Session: sessionmaker) -> None:
         for i, row in enumerate(reader):
             row["id"] = i + 1
             try:
-                row["cost"] = (
-                    float(row["cost"]) if row["cost"] else None
-                )
+                row["cost"] = float(row["cost"]) if row["cost"] else None
             except ValueError:
                 row["cost"] = None
             try:
@@ -172,17 +178,19 @@ def insert_user(Session: sessionmaker) -> None:
         for i, row in enumerate(reader):
             # if i > 5: break
             new_row = {
-                'id': row['user_id'],
-                'birth_year': datetime.now().year - int(row['age']),
-                'gender': Gender.female if row['gender'] == "['Female']" else Gender.male
+                "id": row["user_id"],
+                "birth_year": datetime.now().year - int(row["age"]),
+                "gender": (
+                    Gender.female if row["gender"] == "['Female']" else Gender.male
+                ),
             }
 
-            if row['location'] == "['New York']":
-                new_row['location'] = Location.New_York
-            elif row['location'] == "['Boston']":
-                new_row['location'] = Location.Boston
-            elif row['location'] == "['Portland']":
-                new_row['location'] = Location.Portland
+            if row["location"] == "['New York']":
+                new_row["location"] = Location.New_York
+            elif row["location"] == "['Boston']":
+                new_row["location"] = Location.Boston
+            elif row["location"] == "['Portland']":
+                new_row["location"] = Location.Portland
 
             data.append(new_row)
 
@@ -195,7 +203,6 @@ def insert_user(Session: sessionmaker) -> None:
                 print(e)
                 print("Cannot insert", row["title"])
                 session.rollback()
-
 
 
 if __name__ == "__main__":

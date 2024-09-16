@@ -22,4 +22,3 @@ def get_all(db: Session, skip: int = 0, limit: int = 1561) -> list[User]:
 async def create(db: Session, user: User):
     db.add(user)
     db.commit()
-

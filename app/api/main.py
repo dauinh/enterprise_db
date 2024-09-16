@@ -26,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Dependency
 def get_db():
     db = SessionLocal()

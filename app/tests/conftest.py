@@ -9,7 +9,16 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 from sqlalchemy.orm import sessionmaker
 
 from app.api.db import Base
-from app.api.models import Product, Collection, ProductAttribute, User, Gender, Location, Transaction, Status
+from app.api.models import (
+    Product,
+    Collection,
+    ProductAttribute,
+    User,
+    Gender,
+    Location,
+    Transaction,
+    Status,
+)
 
 load_dotenv()
 TEST_DB_NAME = f'{os.getenv("DB_NAME")}_test'
@@ -89,17 +98,15 @@ def seed(db_session):
         attributes=[
             ProductAttribute(quantity=5, color="pink", size="small"),
             ProductAttribute(quantity=5, color="pink", size="medium"),
-            ProductAttribute(quantity=5, color="pink", size="large")
-        ]
+            ProductAttribute(quantity=5, color="pink", size="large"),
+        ],
     )
     product2 = Product(
         title="toilet toy",
         cost=7.99,
         is_active=True,
         total_quantity=5,
-        attributes=[
-            ProductAttribute(quantity=5, color="white", size="")
-        ]
+        attributes=[ProductAttribute(quantity=5, color="white", size="")],
     )
     collection1 = Collection(name="everyday-tableware")
     collection2 = Collection(name="anniversary-best-sellers")
@@ -115,16 +122,8 @@ def seed(db_session):
     db_session.commit()
 
     # define sample user and transaction items
-    user1 = User(
-        birth_year=1995,
-        gender=Gender.female,
-        location=Location.Boston
-    )
-    user2 = User(
-        birth_year=2002,
-        gender=Gender.male,
-        location=Location.New_York
-    )
+    user1 = User(birth_year=1995, gender=Gender.female, location=Location.Boston)
+    user2 = User(birth_year=2002, gender=Gender.male, location=Location.New_York)
 
     # transaction1 = Transaction(
     #     user_id=user1.id,

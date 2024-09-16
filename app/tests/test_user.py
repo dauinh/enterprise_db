@@ -4,12 +4,7 @@ import asyncio
 from sqlalchemy import select
 
 from app.api.models import User, Gender, Location
-from app.api.repos.user import (
-    get_total,
-    get_by_id,
-    get_all,
-    create
-)
+from app.api.repos.user import get_total, get_by_id, get_all, create
 
 pytest_plugins = ("pytest_asyncio",)
 
@@ -37,11 +32,7 @@ def test_get_all(db_session, seed):
 async def test_create(db_session, seed):
     await create(
         db_session,
-        User(
-            birth_year=1989,
-            gender=Gender.female,
-            location=Location.Boston
-        ),
+        User(birth_year=1989, gender=Gender.female, location=Location.Boston),
     )
     new_user = db_session.query(User).filter_by(birth_year=1989).one()
     assert new_user.id == 3

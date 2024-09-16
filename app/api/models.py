@@ -1,7 +1,17 @@
 import uuid, enum
 from datetime import datetime, UTC
 
-from sqlalchemy import DateTime, Table, ForeignKey, Column, Integer, String, Boolean, Float, Enum
+from sqlalchemy import (
+    DateTime,
+    Table,
+    ForeignKey,
+    Column,
+    Integer,
+    String,
+    Boolean,
+    Float,
+    Enum,
+)
 from sqlalchemy.orm import relationship
 
 from app.api.db import Base
@@ -12,9 +22,11 @@ class Status(enum.Enum):
     pending = 2
     refunded = 3
 
+
 class Gender(enum.Enum):
     male = 1
     female = 2
+
 
 class Location(enum.Enum):
     New_York = 1
@@ -29,6 +41,7 @@ product_collection = Table(
     Column("product_id", Integer, ForeignKey("product.id")),
     Column("collection_id", Integer, ForeignKey("collection.id")),
 )
+
 
 # Relationship table between Product and Transaction
 class Sales(Base):
@@ -85,7 +98,7 @@ class ProductAttribute(Base):
     product_id = Column(ForeignKey("product.id"))
     color = Column(String(50))
     size = Column(String(50))
-    
+
     cost = Column(Float(decimal_return_scale=2))
     quantity = Column(Integer)
     is_active = Column(Boolean)
