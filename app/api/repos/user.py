@@ -23,12 +23,3 @@ async def create(db: Session, user: User):
     db.add(user)
     db.commit()
 
-
-async def update(db: Session, user: User):
-    db.merge(user)
-    db.commit()
-
-
-async def delete(db: Session, user: User):
-    db.delete(user)
-    db.commit()

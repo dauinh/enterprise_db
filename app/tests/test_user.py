@@ -8,9 +8,7 @@ from app.api.repos.user import (
     get_total,
     get_by_id,
     get_all,
-    create,
-    update,
-    delete
+    create
 )
 
 pytest_plugins = ("pytest_asyncio",)
@@ -49,36 +47,3 @@ async def test_create(db_session, seed):
     assert new_user.id == 3
     assert new_user.gender == Gender.female
     assert new_user.location == Location.Boston
-
-
-@pytest.mark.asyncio
-async def test_update(db_session, seed):
-    stmt = select(User).where(User.id == 1)
-    user = db_session.scalars(stmt).one()
-    assert user.birth_year == 1995
-    await update(
-        db_session,
-        User(
-            birth_year=1995,
-            gender=Gender.female,
-            location=Location.Portland
-        )
-    )
-    stmt = select(User).where(User.id == 1)
-    updated = db_session.scalars(stmt).one()
-    assert updated.birth_year == 1995
-    assert updated.gender == Gender.female
-    assert updated.location == Location.Portland
-
-
-# @pytest.mark.asyncio
-# async def test_delete(db_session, seed):
-#     stmt = select(User).where(User.id == 3)
-#     user = db_session.scalars(stmt).one()
-#     await delete(db_session, user)
-#     users = get_all(db_session)
-    
-#     assert users[0].birth_year == 1995
-#     assert users[1].birth_year == 2002
-#     assert users[2].location == Location.Boston
-#     assert get_total(db_session) == 2
